@@ -11,6 +11,7 @@
   var sidebarHtmlUrl = "snippets/sidebar-snippet.html";
   var sideconHtmlUrl = "snippets/sidecon-snippet.html";
   var aboutHtmlUrl = "snippets/about-snippet.html";
+  var baseUrl = "https://107.21.39.108:8000/";
 
   // Convenience function for inserting innerHTML for 'select'
   var insertHtml = function (selector, html) {
@@ -79,7 +80,7 @@
     );
 
     $ajaxUtils.sendGetRequest(
-      "http://107.21.39.108:8000/" + card.url,
+      baseUrl + card.url,
       function (data) {
         // console.log(data); // Check if data is received correctly
         barChart(data, '#' + card.chart); // Call barChart() function with received data  
