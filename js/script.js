@@ -99,7 +99,7 @@
     );
 
     $ajaxUtils.sendGetRequest(
-      "http://localhost:8000/get_blockchain_mini",
+      baseUrl, "get_blockchain_mini",
       function (data) {
         console.log(data); // Check if data is received correctly
         barChart(data); // Call testChart() function with received data    testChart();
