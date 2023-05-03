@@ -11,8 +11,7 @@
   var sidebarHtmlUrl = "snippets/sidebar-snippet.html";
   var sideconHtmlUrl = "snippets/sidecon-snippet.html";
   var aboutHtmlUrl = "snippets/about-snippet.html";
-  var baseUrl = "https://54.236.33.205:8000/";
-  // var baseUrl = "https://107.21.39.108:8000/";
+  var baseUrl = "https://api.bitcoinpublico.com/";
 
   // Convenience function for inserting innerHTML for 'select'
   var insertHtml = function (selector, html) {
