@@ -12,8 +12,7 @@
   dc.loadDashboard = function (chartId) {
     console.log(chartId);
     showLoading("#main-content");
-    sideconHTML();
-    dashboardHTML(chartId);
+    someHtml(chartId);
   };
 
   dc.loadAbout = function () {
@@ -22,13 +21,26 @@
   };
 
   // DASH COMPONENT
+  function someHtml(chartId) {
+    $ajaxUtils.sendGetRequest(
+      urls.someHtmlUrl,
+      function (snippetHtml) {
+        insertHtml("#main-content", snippetHtml);
+      },
+      false
+    );
+
+    sideconHTML();
+    dashboardHTML(chartId);
+  }
+
   function dashboardHTML(cardId) {
     console.log("cardId " + cardId);
 
     $ajaxUtils.sendGetRequest(
       urls.dashHtmlUrl,
       function (snippetHtml) {
-        insertHtml("#main-content", snippetHtml);
+        insertHtml("#dash-content", snippetHtml);
       },
       false
     );
@@ -95,7 +107,7 @@
     $ajaxUtils.sendGetRequest(
       urls.infoHtmlUrl,
       function (snippetHtml) {
-        insertHtml("#info-content", snippetHtml);
+        insertHtml("#chart-info-content", snippetHtml);
       },
       false
     );
@@ -105,7 +117,7 @@
     $ajaxUtils.sendGetRequest(
       urls.sideconHtmlUrl,
       function (snippetHtml) {
-        insertHtml("#sidebar-content", snippetHtml);
+        insertHtml("#sidecon-content", snippetHtml);
       },
       false
     );
@@ -1201,16 +1213,17 @@
   urls = {
     cardHtmlUrl: "snippets/card-snippet.html",
     chartHtmlUrl: "snippets/chart-snippet.html",
+    infoHtmlUrl: "snippets/chart-info-snippet.html",
+    dashHtmlUrl: "snippets/dash-snippet.html",
     footerHtmlUrl: "snippets/footer-snippet.html",
     headerHtmlUrl: "snippets/header-snippet.html",
     homeHtmlUrl: "snippets/home-snippet.html",
-    dashHtmlUrl: "snippets/dash-snippet.html",
-    infoHtmlUrl: "snippets/info-snippet.html",
+    mainHtmlUrl: "snippets/main-snippet.html",
     menuHtmlUrl: "snippets/menu-snippet.html",
     sidebarHtmlUrl: "snippets/sidebar-snippet.html",
     sideconHtmlUrl: "snippets/sidecon-snippet.html",
     aboutHtmlUrl: "snippets/about-snippet.html",
-    mainHtmlUrl: "snippets/main-snippet.html",
+    someHtmlUrl: "snippets/some-snippet.html",
     baseUrl: "http://54.236.33.205:8000/",
     //  baseUrl : "https://api.bitcoinpublico.com/";
   };
