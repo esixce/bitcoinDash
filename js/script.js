@@ -9,10 +9,9 @@
     footerHTML();
   });
 
-  dc.loadDashboard = function (chartId) {
-    console.log(chartId);
+  dc.loadDashboard = function (cardId) {
     showLoading("#main-content");
-    someHtml(chartId);
+    someHtml(cardId);
   };
 
   dc.loadAbout = function () {
@@ -21,7 +20,7 @@
   };
 
   // DASH COMPONENT
-  function someHtml(chartId) {
+  function someHtml(cardId) {
     $ajaxUtils.sendGetRequest(
       urls.someHtmlUrl,
       function (snippetHtml) {
@@ -31,12 +30,10 @@
     );
 
     sideconHTML();
-    dashboardHTML(chartId);
+    dashboardHTML(cardId);
   }
 
   function dashboardHTML(cardId) {
-    console.log("cardId " + cardId);
-
     $ajaxUtils.sendGetRequest(
       urls.dashHtmlUrl,
       function (snippetHtml) {
@@ -260,70 +257,68 @@
   // END COMPONENTS
 
   // CHARTS
-  function barChartSmall(data, tag) {
-    // Extract block size data from API response
-    var blockSizes = data.map(function (d) {
-      return d.size;
-    });
+  function barChartSmall(ddata, tag) {
+    // Define chart dimensions and margins
+    var margin = { top: 10, right: 10, bottom: 10, left: 10 },
+      width = 280 - margin.left - margin.right,
+      height = 220 - margin.top - margin.bottom;
 
-      // Define chart dimensions and margins
-      var margin = { top: 10, right: 10, bottom: 10, left: 25 },
-        width = 280 - margin.left - margin.right,
-        height = 220 - margin.top - margin.bottom;
-
-    // Define x and y scales
-    var x = d3
-      .scaleBand()
-      .range([0, width])
-      .padding(0.1)
-      .domain(
-        data.map(function (d) {
-          return d.height;
-        })
-      );
-
-    var y = d3
-      .scaleLinear()
-      .range([height, 0])
-      .domain([0, d3.max(blockSizes)]);
-
-    // Define chart container and append x and y axes
-    var svg = d3
+    // append the svg object to the body of the page
+    const svg = d3
       .select(tag)
       .append("svg")
-      .attr("width", "100%")
-      .attr("height", "100%")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
       .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    svg
-      .append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x).ticks(3));
+    // Parse the Data
+    d3.csv(
+      "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_stacked.csv"
+    ).then(function (data) {
+      // List of subgroups = header of the csv files = soil condition here
+      const subgroups = data.columns.slice(1);
 
-    svg
-      .append("g")
-      .attr("class", "y axis")
-      .call(d3.axisLeft(y).ticks(3));
+      // List of groups = species here = value of the first column called group -> I show them on the X axis
+      const groups = data.map((d) => d.group);
 
-    // Append bars to chart container
-    svg
-      .selectAll(".bar")
-      .data(data)
-      .enter()
-      .append("rect")
-      .attr("class", "bar")
-      .attr("x", function (d) {
-        return x(d.height);
-      })
-      .attr("y", function (d) {
-        return y(d.size);
-      })
-      .attr("width", x.bandwidth())
-      .attr("height", function (d) {
-        return height - y(d.size);
-      });
+      // Add X axis
+      const x = d3.scaleBand().domain(groups).range([0, width]).padding([0.2]);
+      svg
+        .append("g")
+        .attr("transform", `translate(0, ${height})`)
+        .call(d3.axisBottom(x).tickSizeOuter(0));
+
+      // Add Y axis
+      const y = d3.scaleLinear().domain([0, 60]).range([height, 0]);
+      svg.append("g").call(d3.axisLeft(y));
+
+      // color palette = one color per subgroup
+      const color = d3
+        .scaleOrdinal()
+        .domain(subgroups)
+        .range(["#df88b7", "#ffc000", "#9bca53"]);
+
+      //stack the data? --> stack per subgroup
+      const stackedData = d3.stack().keys(subgroups)(data);
+
+      // Show the bars
+      svg
+        .append("g")
+        .selectAll("g")
+        // Enter in the stack data = loop key per key = group per group
+        .data(stackedData)
+        .join("g")
+        .attr("fill", (d) => color(d.key))
+        .selectAll("rect")
+        // enter a second time = loop subgroup per subgroup to add all rectangles
+        .data((d) => d)
+        .join("rect")
+        .attr("x", (d) => x(d.data.group))
+        .attr("y", (d) => y(d[1]))
+        .attr("height", (d) => y(d[0]) - y(d[1]))
+        .attr("width", x.bandwidth());
+    });
   }
 
   function barChartLarge(data, tag) {
@@ -332,9 +327,9 @@
       return d.size;
     });
 
-      var margin = { top: 10, right: 10, bottom: 10, left: 25 },
-        width = 750 - margin.left - margin.right,
-        height = 820 - margin.top - margin.bottom;
+    var margin = { top: 10, right: 10, bottom: 10, left: 25 },
+      width = 750 - margin.left - margin.right,
+      height = 820 - margin.top - margin.bottom;
 
     // Define x and y scales
     var x = d3
@@ -365,12 +360,9 @@
       .append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x).ticks(3));
+      .call(d3.axisBottom(x).ticks(0));
 
-    svg
-      .append("g")
-      .attr("class", "y axis")
-      .call(d3.axisLeft(y).ticks(3));
+    svg.append("g").attr("class", "y axis").call(d3.axisLeft(y).ticks(0));
 
     // Append bars to chart container
     svg
@@ -392,12 +384,12 @@
   }
 
   function treemapLarge(ddata, tag) {
-    console.log("in treemap");
-
-      // Define chart dimensions and margins
-      var margin = { top: 10, right: 10, bottom: 10, left: 25 },
-        width = 750 - margin.left - margin.right,
-        height = 620 - margin.top - margin.bottom;
+    // Define chart dimensions and margins
+    var margin = { top: 10, right: 10, bottom: 10, left: 25 },
+      width =
+        d3.select(".col-sm-8").node().offsetWidth - margin.left - margin.right,
+      // width = 750 - margin.left - margin.right,
+      height = 620 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
     const svg = d3
@@ -528,24 +520,22 @@
           return color(d.data.name);
         });
 
-        // Add title for the 3 groups
-        svg
-          .append("text")
-          .attr("x", 0)
-          // .attr("y", 14) // +20 to adjust position (lower)
-          // .text("Three group leaders and 14 employees")
-          .attr("font-size", "19px")
-          .attr("fill", "grey");
+      // Add title for the 3 groups
+      svg
+        .append("text")
+        .attr("x", 0)
+        // .attr("y", 14) // +20 to adjust position (lower)
+        // .text("Three group leaders and 14 employees")
+        .attr("font-size", "19px")
+        .attr("fill", "grey");
     });
   }
 
   function treemapSmall(ddata, tag) {
-    console.log("in treemap");
-
-      // Define chart dimensions and margins
-      var margin = { top: 10, right: 10, bottom: 10, left: 25 },
-        width = 250 - margin.left - margin.right,
-        height = 220 - margin.top - margin.bottom;
+    // Define chart dimensions and margins
+    var margin = { top: 10, right: 10, bottom: 10, left: 10 },
+      width = 280 - margin.left - margin.right,
+      height = 220 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
     const svg = d3
@@ -569,7 +559,7 @@
       d3
         .treemap()
         .size([width, height])
-        .paddingTop(28)
+        .paddingTop(0)
         .paddingRight(7)
         .paddingInner(3)(
         // Padding between each rectangle
@@ -604,7 +594,8 @@
         .attr("height", function (d) {
           return d.y1 - d.y0;
         })
-        .style("stroke", "black")
+        .style("stroke", '#576CBC')
+        .style("stroke-width", "1px")
         .style("fill", function (d) {
           return color(d.parent.data.name);
         })
@@ -617,72 +608,72 @@
         });
 
       // and to add the text labels
-      svg
-        .selectAll("text")
-        .data(root.leaves())
-        .enter()
-        .append("text")
-        .attr("x", function (d) {
-          return d.x0 + 5;
-        }) // +10 to adjust position (more right)
-        .attr("y", function (d) {
-          return d.y0 + 20;
-        }) // +20 to adjust position (lower)
-        .text(function (d) {
-          return d.data.name.replace("mister_", "");
-        })
-        .attr("font-size", "19px")
-        .attr("fill", "white");
+      // svg
+      //   .selectAll("text")
+      //   .data(root.leaves())
+      //   .enter()
+      //   .append("text")
+      //   .attr("x", function (d) {
+      //     return d.x0 + 5;
+      //   }) // +10 to adjust position (more right)
+      //   .attr("y", function (d) {
+      //     return d.y0 + 20;
+      //   }) // +20 to adjust position (lower)
+      //   .text(function (d) {
+      //     return d.data.name.replace("mister_", "");
+      //   })
+      //   .attr("font-size", "19px")
+      //   .attr("fill", "white");
 
       // and to add the text labels
-      svg
-        .selectAll("vals")
-        .data(root.leaves())
-        .enter()
-        .append("text")
-        .attr("x", function (d) {
-          return d.x0 + 5;
-        }) // +10 to adjust position (more right)
-        .attr("y", function (d) {
-          return d.y0 + 35;
-        }) // +20 to adjust position (lower)
-        .text(function (d) {
-          return d.data.value;
-        })
-        .attr("font-size", "11px")
-        .attr("fill", "white");
+      // svg
+      //   .selectAll("vals")
+      //   .data(root.leaves())
+      //   .enter()
+      //   .append("text")
+      //   .attr("x", function (d) {
+      //     return d.x0 + 5;
+      //   }) // +10 to adjust position (more right)
+      //   .attr("y", function (d) {
+      //     return d.y0 + 35;
+      //   }) // +20 to adjust position (lower)
+      //   .text(function (d) {
+      //     return d.data.value;
+      //   })
+      //   .attr("font-size", "11px")
+      //   .attr("fill", "white");
 
       // Add title for the 3 groups
-      svg
-        .selectAll("titles")
-        .data(
-          root.descendants().filter(function (d) {
-            return d.depth == 1;
-          })
-        )
-        .enter()
-        .append("text")
-        .attr("x", function (d) {
-          return d.x0;
-        })
-        .attr("y", function (d) {
-          return d.y0 + 21;
-        })
-        .text(function (d) {
-          return d.data.name;
-        })
-        .attr("font-size", "19px")
-        .attr("fill", function (d) {
-          return color(d.data.name);
-        });
+      // svg
+      //   .selectAll("titles")
+      //   .data(
+      //     root.descendants().filter(function (d) {
+      //       return d.depth == 1;
+      //     })
+      //   )
+      //   .enter()
+      //   .append("text")
+      //   .attr("x", function (d) {
+      //     return d.x0;
+      //   })
+      //   .attr("y", function (d) {
+      //     return d.y0 + 21;
+      //   })
+      //   .text(function (d) {
+      //     return d.data.name;
+      //   })
+      //   .attr("font-size", "19px")
+      //   .attr("fill", function (d) {
+      //     return color(d.data.name);
+      //   });
     });
   }
 
   function areaGraphLarge(ddata, tag) {
-      // Define chart dimensions and margins
-      var margin = { top: 10, right: 10, bottom: 10, left: 25 },
-        width = 750 - margin.left - margin.right,
-        height = 560 - margin.top - margin.bottom;
+    // Define chart dimensions and margins
+    var margin = { top: 10, right: 10, bottom: 10, left: 25 },
+      width = 750 - margin.left - margin.right,
+      height = 560 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
     const svg = d3
@@ -894,10 +885,10 @@
   }
 
   function areaGraphSmall(ddata, tag) {
-      // Define chart dimensions and margins
-      var margin = { top: 10, right: 10, bottom: 10, left: 25 },
-        width = 250 - margin.left - margin.right,
-        height = 220 - margin.top - margin.bottom;
+    // Define chart dimensions and margins
+    var margin = { top: 10, right: 10, bottom: 10, left: 10 },
+      width = 280 - margin.left - margin.right,
+      height = 220 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
     const svg = d3
@@ -941,28 +932,28 @@
       const xAxis = svg
         .append("g")
         .attr("transform", `translate(0, ${height})`)
-        .call(d3.axisBottom(x).ticks(5));
+        .call(d3.axisBottom(x).ticks(0));
 
       // Add X axis label:
-      svg
-        .append("text")
-        .attr("text-anchor", "end")
-        .attr("x", width)
-        .attr("y", height + 40)
-        .text("Time (year)");
+      // svg
+      //   .append("text")
+      //   .attr("text-anchor", "end")
+      //   .attr("x", width)
+      //   .attr("y", height + 40)
+      //   .text("Time (year)");
 
-      // Add Y axis label:
-      svg
-        .append("text")
-        .attr("text-anchor", "end")
-        .attr("x", 0)
-        .attr("y", -20)
-        .text("# of baby born")
-        .attr("text-anchor", "start");
+      // // Add Y axis label:
+      // svg
+      //   .append("text")
+      //   .attr("text-anchor", "end")
+      //   .attr("x", 0)
+      //   .attr("y", -20)
+      //   .text("# of baby born")
+      //   .attr("text-anchor", "start");
 
       // Add Y axis
       const y = d3.scaleLinear().domain([0, 200000]).range([height, 0]);
-      svg.append("g").call(d3.axisLeft(y).ticks(5));
+      svg.append("g").call(d3.axisLeft(y).ticks(0));
 
       //////////
       // BRUSHING AND CHART //
@@ -1108,7 +1099,6 @@
     });
   }
 
-
   // CHART INTERACTIVITY
   function showDetail(d) {
     console.log(d.data);
@@ -1239,14 +1229,14 @@
     cardB: {
       id: "B",
       tag: "#cardB-content",
-      txt: "chartB txt",
+      txt: "Volume transacted",
       url: "get_blockchain_mini",
       chart: "chart-mini-B",
     },
     cardC: {
       id: "C",
       tag: "#cardC-content",
-      txt: "chartC txt",
+      txt: "Some bar chart",
       url: "get_blockchain_mini",
       chart: "chart-mini-C",
     },

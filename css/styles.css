@@ -244,11 +244,9 @@ body {
   ); /* 100px is the combined height of the header and footer */
 }
 
-
-
 .wrapper {
   display: grid;
-  grid-template-columns: 200px 1fr; /* Sidebar width is 200px, and the main content fills the remaining space */
+  grid-template-columns: 40px 1fr; /* Sidebar width is 200px, and the main content fills the remaining space */
 }
 
 .sidecon-content {
@@ -256,5 +254,5 @@ body {
 }
 
 .chart-content {
-  padding: 20px; /* Example padding */
+  /* padding: 20px;  */
 }
