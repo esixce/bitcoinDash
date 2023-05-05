@@ -256,6 +256,43 @@
   }
   // END COMPONENTS
 
+  function txsmapHTML() {
+    $ajaxUtils.sendGetRequest(
+      urls.txsmapHtmlUrl,
+      function (snippetHtml) {
+        insertHtml("#dash-content", snippetHtml);
+      },
+      false
+    );
+  }
+
+  // CHART INTERACTIVITY
+  function showDetail(d) {
+    console.log(d.data);
+    console.log(d.data.name);
+
+    showLoading("#dash-content");
+
+    txsmapHTML();
+
+    $ajaxUtils.sendGetRequest(
+      urls.baseUrl + "get_blockchain_mini",
+      function (data) {
+        treemapSmall(data, "#block-chart-content");
+      },
+      true
+    );
+    $ajaxUtils.sendGetRequest(
+      urls.baseUrl + "get_blockchain_mini",
+      function (data) {
+        treemapLarge(data, "#txs-chart-content");
+      },
+      true
+    );
+
+    chartInfoHTML();
+  }
+
   // CHARTS
   function barChartSmall(ddata, tag) {
     // Define chart dimensions and margins
@@ -386,10 +423,10 @@
   function treemapLarge(ddata, tag) {
     // Define chart dimensions and margins
     var margin = { top: 10, right: 10, bottom: 10, left: 25 },
-      width =
-        d3.select(".col-sm-8").node().offsetWidth - margin.left - margin.right,
+      width = 600 - margin.left - margin.right,
+      // d3.select(".chart-content").node().offsetWidth - margin.left - margin.right,
       // width = 750 - margin.left - margin.right,
-      height = 620 - margin.top - margin.bottom;
+      height = 600 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
     const svg = d3
@@ -413,7 +450,7 @@
       d3
         .treemap()
         .size([width, height])
-        .paddingTop(28)
+        .paddingTop(0)
         .paddingRight(7)
         .paddingInner(3)(
         // Padding between each rectangle
@@ -430,6 +467,33 @@
 
       // And a opacity scale
       const opacity = d3.scaleLinear().domain([10, 30]).range([0.5, 1]);
+
+      // create a tooltip
+      var Tooltip = d3
+        .select(tag)
+        .append("div")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "2px")
+        .style("border-radius", "5px")
+        .style("padding", "5px");
+
+      // Three function that change the tooltip when user hover / move / leave a cell
+      var mouseover = function (d) {
+        Tooltip.style("opacity", 1);
+        d3.select(this).style("stroke", "black").style("opacity", 1);
+      };
+      var mousemove = function (d) {
+        Tooltip.html("The exact value of<br>this cell is: " + d.value)
+          .style("left", d3.mouse(this)[0] + 70 + "px")
+          .style("top", d3.mouse(this)[1] + "px");
+      };
+      var mouseleave = function (d) {
+        Tooltip.style("opacity", 0);
+        d3.select(this).style("stroke", "none").style("opacity", 0.8);
+      };
 
       // use this information to add rectangles:
       svg
@@ -497,28 +561,28 @@
         .attr("fill", "white");
 
       // Add title for the 3 groups
-      svg
-        .selectAll("titles")
-        .data(
-          root.descendants().filter(function (d) {
-            return d.depth == 1;
-          })
-        )
-        .enter()
-        .append("text")
-        .attr("x", function (d) {
-          return d.x0;
-        })
-        .attr("y", function (d) {
-          return d.y0 + 21;
-        })
-        .text(function (d) {
-          return d.data.name;
-        })
-        .attr("font-size", "19px")
-        .attr("fill", function (d) {
-          return color(d.data.name);
-        });
+      // svg
+      //   .selectAll("titles")
+      //   .data(
+      //     root.descendants().filter(function (d) {
+      //       return d.depth == 1;
+      //     })
+      //   )
+      //   .enter()
+      //   .append("text")
+      //   .attr("x", function (d) {
+      //     return d.x0;
+      //   })
+      //   .attr("y", function (d) {
+      //     return d.y0 + 210;
+      //   })
+      //   .text(function (d) {
+      //     return d.data.name;
+      //   })
+      //   .attr("font-size", "19px")
+      //   .attr("fill", function (d) {
+      //     return color(d.data.name);
+      //   });
 
       // Add title for the 3 groups
       svg
@@ -594,7 +658,7 @@
         .attr("height", function (d) {
           return d.y1 - d.y0;
         })
-        .style("stroke", '#576CBC')
+        .style("stroke", "#576CBC")
         .style("stroke-width", "1px")
         .style("fill", function (d) {
           return color(d.parent.data.name);
@@ -1099,21 +1163,6 @@
     });
   }
 
-  // CHART INTERACTIVITY
-  function showDetail(d) {
-    console.log(d.data);
-    console.log(d.data.name);
-
-    treemap("#info-content");
-    // Use the clicked rectangle's data to display the details for that unit
-    // You can use a library like Bootstrap or create your own modal to display the details
-
-    // For example, you could display the details in a Bootstrap modal:
-    // $("#myModal").modal("show");
-    // $("#myModal .modal-title").text(d.data.name);
-    // $("#myModal .modal-body").html("<p>Details for " + d.data.name + ":</p><ul><li>Value: " + d.data.value + "</li></ul>");
-  }
-
   // TEST ZONE
 
   function bigBarChart(data, tag) {
@@ -1214,6 +1263,7 @@
     sideconHtmlUrl: "snippets/sidecon-snippet.html",
     aboutHtmlUrl: "snippets/about-snippet.html",
     someHtmlUrl: "snippets/some-snippet.html",
+    txsmapHtmlUrl: "snippets/txsmap-snippet.html",
     baseUrl: "http://54.236.33.205:8000/",
     //  baseUrl : "https://api.bitcoinpublico.com/";
   };
