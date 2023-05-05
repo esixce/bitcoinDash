@@ -276,16 +276,33 @@
     txsmapHTML();
 
     $ajaxUtils.sendGetRequest(
-      urls.baseUrl + "get_blockchain_mini",
-      function (data) {
-        treemapSmall(data, "#block-chart-content");
+      urls.chartHtmlUrl,
+      function (snippetHtml) {
+        insertHtml("#txs-content", snippetHtml);
       },
-      true
+      false
     );
+
+    $ajaxUtils.sendGetRequest(
+      urls.smallchartHtmlUrl,
+      function (snippetHtml) {
+        insertHtml("#block-content", snippetHtml);
+      },
+      false
+    );
+    
     $ajaxUtils.sendGetRequest(
       urls.baseUrl + "get_blockchain_mini",
       function (data) {
-        treemapLarge(data, "#txs-chart-content");
+        treemapSmall(data, "#small-chart-container");
+      },
+      true
+    );
+
+    $ajaxUtils.sendGetRequest(
+      urls.baseUrl + "get_blockchain_mini",
+      function (data) {
+        treemapLarge(data, "#chart-container");
       },
       true
     );
@@ -1264,6 +1281,7 @@
     aboutHtmlUrl: "snippets/about-snippet.html",
     someHtmlUrl: "snippets/some-snippet.html",
     txsmapHtmlUrl: "snippets/txsmap-snippet.html",
+    smallchartHtmlUrl: "snippets/small-chart-snippet.html",
     baseUrl: "http://54.236.33.205:8000/",
     //  baseUrl : "https://api.bitcoinpublico.com/";
   };
