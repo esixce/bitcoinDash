@@ -19,18 +19,163 @@
     aboutHTML();
   };
 
+  // HOME COMPONENT
+  function mainHtml() {
+    $ajaxUtils.sendGetRequest(
+      urls.mainHtmlUrl,
+      function (snippetHtml) {
+        insertHtml("#main-content", snippetHtml);
+
+        sidebarHTML();
+        homeHTML();
+        overviewHTML();
+      },
+      false
+    );
+  }
+
+  function overviewHTML() {
+    $ajaxUtils.sendGetRequest(
+      urls.baseUrl + "get_blockchain_info",
+      function (data) {
+        $ajaxUtils.sendGetRequest(
+          urls.overviewHtmlUrl,
+          function (overviewHtml) {
+            var overviewHtml = insertProperty(
+              overviewHtml,
+              "chain",
+              data.chain
+            );
+            var overviewHtml = insertProperty(
+              overviewHtml,
+              "blocks",
+              data.blocks
+            );
+            var overviewHtml = insertProperty(
+              overviewHtml,
+              "headers",
+              data.headers
+            );
+            var overviewHtml = insertProperty(
+              overviewHtml,
+              "bestblockhash",
+              data.bestblockhash
+            );
+            var overviewHtml = insertProperty(
+              overviewHtml,
+              "difficulty",
+              data.difficulty
+            );
+            var overviewHtml = insertProperty(
+              overviewHtml,
+              "mediantime",
+              data.mediantime
+            );
+
+            insertHtml("#overview-content", overviewHtml);
+          },
+          false
+        );
+      },
+      true
+    );
+  }
+
+  function homeHTML() {
+    $ajaxUtils.sendGetRequest(
+      urls.homeHtmlUrl,
+      function (snippetHtml) {
+        insertHtml("#home-content", snippetHtml);
+
+        cardHTML(homeCards.cardA);
+        cardHTML(homeCards.cardB);
+        cardHTML(homeCards.cardC);
+      },
+      false
+    );
+
+    size = 6;
+    size = 3;
+    // for (let i = 65; i < 65 + size; i++) {
+    //   cardHTML(String.fromCharCode(i));
+    // }
+  }
+
+  function cardHTML(card) {
+    $ajaxUtils.sendGetRequest(
+      urls.cardHtmlUrl,
+      function (cardHtml) {
+        var cardHtml = insertProperty(cardHtml, "cardId", card.id);
+        var cardHtml = insertProperty(cardHtml, "cardTxt", card.txt);
+        var cardHtml = insertProperty(cardHtml, "chartId", card.chart);
+        insertHtml(card.tag, cardHtml);
+      },
+      false
+    );
+
+    switch (card.id) {
+      case "A":
+        $ajaxUtils.sendGetRequest(
+          urls.baseUrl + "get_fee_size_block",
+          function (data) {
+            treemapSmall(data, "#" + card.chart);
+          },
+          true
+        );
+        break;
+      case "B":
+        $ajaxUtils.sendGetRequest(
+          urls.baseUrl + "get_volume_mini",
+          function (data) {
+            areaGraphSmall(data, "#" + card.chart);
+          },
+          true
+        );
+        break;
+      case "C":
+        $ajaxUtils.sendGetRequest(
+          urls.baseUrl + card.url,
+          function (data) {
+            barChartSmall(data, "#" + card.chart); // Call barChart() function with received data
+          },
+          true
+        );
+        break;
+      case "D":
+        // ... and so on
+        break;
+      case "E":
+        // ... and so on
+        break;
+      case "F":
+        // ... and so on
+        break;
+      // ... and so on
+    }
+  }
+
+  function sidebarHTML() {
+    $ajaxUtils.sendGetRequest(
+      urls.sidebarHtmlUrl,
+      function (snippetHtml) {
+        insertHtml("#sidebar-content", snippetHtml);
+      },
+      false
+    );
+  }
+
   // DASH COMPONENT
   function someHtml(cardId) {
     $ajaxUtils.sendGetRequest(
       urls.someHtmlUrl,
       function (snippetHtml) {
         insertHtml("#main-content", snippetHtml);
+
+        sideconHTML();
+        dashboardHTML(cardId);
       },
       false
     );
-
-    sideconHTML();
-    dashboardHTML(cardId);
   }
 
   function dashboardHTML(cardId) {
@@ -38,13 +183,13 @@
       urls.dashHtmlUrl,
       function (snippetHtml) {
         insertHtml("#dash-content", snippetHtml);
+
+        // menuHTML();
+        chartHTML(cardId);
+        chartInfoHTML(cardId);
       },
       false
     );
-
-    // menuHTML();
-    chartHTML(cardId);
-    chartInfoHTML(cardId);
   }
 
   function chartHTML(cardId) {
@@ -152,108 +297,6 @@
     );
   }
 
-  // HOME COMPONENT
-  function mainHtml() {
-    $ajaxUtils.sendGetRequest(
-      urls.mainHtmlUrl,
-      function (snippetHtml) {
-        insertHtml("#main-content", snippetHtml);
-      },
-      false
-    );
-
-    sidebarHTML();
-    homeHTML();
-  }
-
-  function homeHTML() {
-    $ajaxUtils.sendGetRequest(
-      urls.homeHtmlUrl,
-      function (snippetHtml) {
-        insertHtml("#home-content", snippetHtml);
-      },
-      false
-    );
-
-    size = 6;
-    size = 3;
-    // for (let i = 65; i < 65 + size; i++) {
-    //   cardHTML(String.fromCharCode(i));
-    // }
-
-    cardHTML(homeCards.cardA);
-    cardHTML(homeCards.cardB);
-    cardHTML(homeCards.cardC);
-  }
-
-  function cardHTML(card) {
-    // function cardHTML(cardId) {
-    // card = getCardById(cardId);
-    console.log(card);
-    console.log(card.txt);
-    console.log(card.chart);
-    console.log(card.tag);
-    $ajaxUtils.sendGetRequest(
-      urls.cardHtmlUrl,
-      function (cardHtml) {
-        var cardHtml = insertProperty(cardHtml, "cardId", card.id);
-        var cardHtml = insertProperty(cardHtml, "cardTxt", card.txt);
-        var cardHtml = insertProperty(cardHtml, "chartId", card.chart);
-        insertHtml(card.tag, cardHtml);
-      },
-      false
-    );
-
-    switch (card.id) {
-      case "A":
-        $ajaxUtils.sendGetRequest(
-          urls.baseUrl + card.url,
-          function (data) {
-            treemapSmall(data, "#" + card.chart);
-          },
-          true
-        );
-        break;
-      case "B":
-        $ajaxUtils.sendGetRequest(
-          urls.baseUrl + card.url,
-          function (data) {
-            areaGraphSmall(data, "#" + card.chart);
-          },
-          true
-        );
-        break;
-      case "C":
-        $ajaxUtils.sendGetRequest(
-          urls.baseUrl + card.url,
-          function (data) {
-            barChartSmall(data, "#" + card.chart); // Call barChart() function with received data
-          },
-          true
-        );
-        break;
-      case "D":
-        // ... and so on
-        break;
-      case "E":
-        // ... and so on
-        break;
-      case "F":
-        // ... and so on
-        break;
-      // ... and so on
-    }
-  }
-
-  function sidebarHTML() {
-    $ajaxUtils.sendGetRequest(
-      urls.sidebarHtmlUrl,
-      function (snippetHtml) {
-        insertHtml("#sidebar-content", snippetHtml);
-      },
-      false
-    );
-  }
   // END COMPONENTS
 
   function txsmapHTML() {
@@ -268,9 +311,6 @@
 
   // CHART INTERACTIVITY
   function showDetail(d) {
-    console.log(d.data);
-    console.log(d.data.name);
-
     showLoading("#dash-content");
 
     txsmapHTML();
@@ -290,7 +330,7 @@
       },
       false
     );
-    
+
     $ajaxUtils.sendGetRequest(
       urls.baseUrl + "get_blockchain_mini",
       function (data) {
@@ -311,6 +351,12 @@
   }
 
   // CHARTS
+  // 
+  // area graph: "https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/5_OneCatSevNumOrdered_wide.csv"
+  // treemap: "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_dendrogram_full.json"
+  // bar chart: "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_stacked.csv"
+
+
   function barChartSmall(ddata, tag) {
     // Define chart dimensions and margins
     var margin = { top: 10, right: 10, bottom: 10, left: 10 },
@@ -437,7 +483,7 @@
       });
   }
 
-  function treemapLarge(ddata, tag) {
+  function treemapLarge(data, tag) {
     // Define chart dimensions and margins
     var margin = { top: 10, right: 10, bottom: 10, left: 25 },
       width = 600 - margin.left - margin.right,
@@ -455,9 +501,6 @@
       .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
     // read json data
-    d3.json(
-      "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_dendrogram_full.json"
-    ).then(function (data) {
       // Give the data to this cluster layout:
       const root = d3.hierarchy(data).sum(function (d) {
         return d.value;
@@ -609,7 +652,6 @@
         // .text("Three group leaders and 14 employees")
         .attr("font-size", "19px")
         .attr("fill", "grey");
-    });
   }
 
   function treemapSmall(ddata, tag) {
@@ -628,126 +670,65 @@
       .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
     // read json data
-    d3.json(
-      "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_dendrogram_full.json"
-    ).then(function (data) {
-      // Give the data to this cluster layout:
-      const root = d3.hierarchy(data).sum(function (d) {
-        return d.value;
-      }); // Here the size of each leave is given in the 'value' field in input data
+    // d3.json(
+    //   "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_dendrogram_full.json"
+    // ).then(function (data) {
+    console.log(data);
+    // Give the data to this cluster layout:
+    const root = d3.hierarchy(data).sum(function (d) {
+      return d.value;
+    }); // Here the size of each leave is given in the 'value' field in input data
 
-      // Then d3.treemap computes the position of each element of the hierarchy
-      d3
-        .treemap()
-        .size([width, height])
-        .paddingTop(0)
-        .paddingRight(7)
-        .paddingInner(3)(
-        // Padding between each rectangle
-        //.paddingOuter(6)
-        //.padding(20)
-        root
-      );
+    // Then d3.treemap computes the position of each element of the hierarchy
+    d3
+      .treemap()
+      .size([width, height])
+      .paddingTop(0)
+      .paddingRight(7)
+      .paddingInner(3)(
+      // Padding between each rectangle
+      //.paddingOuter(6)
+      //.padding(20)
+      root
+    );
 
-      // prepare a color scale
-      const color = d3
-        .scaleOrdinal()
-        .domain(["boss1", "boss2", "boss3"])
-        .range(["#df88b7", "#ffc000", "#9bca53"]);
+    // prepare a color scale
+    const color = d3
+      .scaleOrdinal()
+      .domain(["boss1", "boss2", "boss3"])
+      .range(["#df88b7", "#ffc000", "#9bca53"]);
 
-      // And a opacity scale
-      const opacity = d3.scaleLinear().domain([10, 30]).range([0.5, 1]);
+    // And a opacity scale
+    const opacity = d3.scaleLinear().domain([10, 30]).range([0.5, 1]);
 
-      // use this information to add rectangles:
-      svg
-        .selectAll("rect")
-        .data(root.leaves())
-        .join("rect")
-        .attr("x", function (d) {
-          return d.x0;
-        })
-        .attr("y", function (d) {
-          return d.y0;
-        })
-        .attr("width", function (d) {
-          return d.x1 - d.x0;
-        })
-        .attr("height", function (d) {
-          return d.y1 - d.y0;
-        })
-        .style("stroke", "#576CBC")
-        .style("stroke-width", "1px")
-        .style("fill", function (d) {
-          return color(d.parent.data.name);
-        })
-        .style("opacity", function (d) {
-          return opacity(d.data.value);
-        })
-        .on("click", function (event, d) {
-          // console.log(`Clicked on ${d}`);
-          showDetail(d);
-        });
-
-      // and to add the text labels
-      // svg
-      //   .selectAll("text")
-      //   .data(root.leaves())
-      //   .enter()
-      //   .append("text")
-      //   .attr("x", function (d) {
-      //     return d.x0 + 5;
-      //   }) // +10 to adjust position (more right)
-      //   .attr("y", function (d) {
-      //     return d.y0 + 20;
-      //   }) // +20 to adjust position (lower)
-      //   .text(function (d) {
-      //     return d.data.name.replace("mister_", "");
-      //   })
-      //   .attr("font-size", "19px")
-      //   .attr("fill", "white");
-
-      // and to add the text labels
-      // svg
-      //   .selectAll("vals")
-      //   .data(root.leaves())
-      //   .enter()
-      //   .append("text")
-      //   .attr("x", function (d) {
-      //     return d.x0 + 5;
-      //   }) // +10 to adjust position (more right)
-      //   .attr("y", function (d) {
-      //     return d.y0 + 35;
-      //   }) // +20 to adjust position (lower)
-      //   .text(function (d) {
-      //     return d.data.value;
-      //   })
-      //   .attr("font-size", "11px")
-      //   .attr("fill", "white");
-
-      // Add title for the 3 groups
-      // svg
-      //   .selectAll("titles")
-      //   .data(
-      //     root.descendants().filter(function (d) {
-      //       return d.depth == 1;
-      //     })
-      //   )
-      //   .enter()
-      //   .append("text")
-      //   .attr("x", function (d) {
-      //     return d.x0;
-      //   })
-      //   .attr("y", function (d) {
-      //     return d.y0 + 21;
-      //   })
-      //   .text(function (d) {
-      //     return d.data.name;
-      //   })
-      //   .attr("font-size", "19px")
-      //   .attr("fill", function (d) {
-      //     return color(d.data.name);
-      //   });
-    });
+    // use this information to add rectangles:
+    svg
+      .selectAll("rect")
+      .data(root.leaves())
+      .join("rect")
+      .attr("x", function (d) {
+        return d.x0;
+      })
+      .attr("y", function (d) {
+        return d.y0;
+      })
+      .attr("width", function (d) {
+        return d.x1 - d.x0;
+      })
+      .attr("height", function (d) {
+        return d.y1 - d.y0;
+      })
+      .style("stroke", "#576CBC")
+      .style("stroke-width", "1px")
+      .style("fill", function (d) {
+        return color(d.parent.data.name);
+      })
+      .style("opacity", function (d) {
+        return opacity(d.data.value);
+      })
+      .on("click", function (event, d) {
+        showDetail(d);
+      });
   }
 
   function areaGraphLarge(ddata, tag) {
@@ -791,7 +772,7 @@
         .scaleLinear()
         .domain(
           d3.extent(data, function (d) {
-            return d.year;
+            return d.height;
           })
         )
         .range([0, width]);
@@ -806,7 +787,7 @@
         .attr("text-anchor", "end")
         .attr("x", width)
         .attr("y", height + 40)
-        .text("Time (year)");
+        .text("Height (height)");
 
       // Add Y axis label:
       svg
@@ -852,7 +833,7 @@
       const area = d3
         .area()
         .x(function (d) {
-          return x(d.data.year);
+          return x(d.data.height);
         })
         .y0(function (d) {
           return y(d[0]);
@@ -891,7 +872,7 @@
           if (!idleTimeout) return (idleTimeout = setTimeout(idled, 350)); // This allows to wait a little bit
           x.domain(
             d3.extent(data, function (d) {
-              return d.year;
+              return d.height;
             })
           );
         } else {
@@ -965,7 +946,10 @@
     });
   }
 
-  function areaGraphSmall(ddata, tag) {
+  function areaGraphSmall(dataBody, tag) {
+    columns = dataBody.columns;
+    data = dataBody.data;
+    console.log(data);
     // Define chart dimensions and margins
     var margin = { top: 10, right: 10, bottom: 10, left: 10 },
       width = 280 - margin.left - margin.right,
@@ -980,204 +964,186 @@
       .append("g")
       .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-    // Parse the Data
-    d3.csv(
-      "https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/5_OneCatSevNumOrdered_wide.csv"
-    ).then(function (data) {
-      //////////
-      // GENERAL //
-      //////////
+    //////////
+    // GENERAL //
+    //////////
 
-      // List of groups = header of the csv files
-      const keys = data.columns.slice(1);
+    // List of groups = header of the csv files
+    const keys = columns.slice(1);
+    console.log(keys)
 
-      // color palette
-      const color = d3.scaleOrdinal().domain(keys).range(d3.schemeSet2);
+    // color palette
+    const color = d3.scaleOrdinal().domain(keys).range(d3.schemeSet2);
+    console.log(color)
 
-      //stack the data?
-      const stackedData = d3.stack().keys(keys)(data);
+    //stack the data?
+    const stackedData = d3.stack().keys(keys)(data);
+    console.log(stackedData)
 
-      //////////
-      // AXIS //
-      //////////
+    //////////
+    // AXIS //
+    //////////
 
-      // Add X axis
-      const x = d3
-        .scaleLinear()
-        .domain(
+    // Add X axis
+    const x = d3
+      .scaleLinear()
+      .domain(
+        d3.extent(data, function (d) {
+          return d.height;
+        })
+      )
+      .range([0, width]);
+    const xAxis = svg
+      .append("g")
+      .attr("transform", `translate(0, ${height})`)
+      .call(d3.axisBottom(x).ticks(0));
+
+    // Add Y axis
+    const y = d3.scaleLinear().domain([0, 200000]).range([height, 0]);
+    svg.append("g").call(d3.axisLeft(y).ticks(0));
+
+    //////////
+    // BRUSHING AND CHART //
+    //////////
+
+    // Add a clipPath: everything out of this area won't be drawn.
+    const clip = svg
+      .append("defs")
+      .append("svg:clipPath")
+      .attr("id", "clip")
+      .append("svg:rect")
+      .attr("width", width)
+      .attr("height", height)
+      .attr("x", 0)
+      .attr("y", 0);
+
+    // Add brushing
+    const brush = d3
+      .brushX() // Add the brush feature using the d3.brush function
+      .extent([
+        [0, 0],
+        [width, height],
+      ]) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
+      .on("end", updateChart); // Each time the brush selection changes, trigger the 'updateChart' function
+
+    // Create the scatter variable: where both the circles and the brush take place
+    const areaChart = svg.append("g").attr("clip-path", "url(#clip)");
+
+    // Area generator
+    const area = d3
+      .area()
+      .x(function (d) {
+        return x(d.data.height);
+      })
+      .y0(function (d) {
+        return y(d[0]);
+      })
+      .y1(function (d) {
+        return y(d[1]);
+      });
+
+    // Show the areas
+    areaChart
+      .selectAll("mylayers")
+      .data(stackedData)
+      .join("path")
+      .attr("class", function (d) {
+        console.log("d " + d);
+        return "myArea " + d.key;
+      })
+      .style("fill", function (d) {
+        return color(d.key);
+      })
+      .attr("d", area);
+
+    // Add the brushing
+    areaChart.append("g").attr("class", "brush").call(brush);
+
+    let idleTimeout;
+    function idled() {
+      idleTimeout = null;
+    }
+
+    // A function that update the chart for given boundaries
+    function updateChart(event, d) {
+      extent = event.selection;
+
+      // If no selection, back to initial coordinate. Otherwise, update X axis domain
+      if (!extent) {
+        if (!idleTimeout) return (idleTimeout = setTimeout(idled, 350)); // This allows to wait a little bit
+        x.domain(
           d3.extent(data, function (d) {
-            return d.year;
+            return d.height;
           })
-        )
-        .range([0, width]);
-      const xAxis = svg
-        .append("g")
-        .attr("transform", `translate(0, ${height})`)
-        .call(d3.axisBottom(x).ticks(0));
-
-      // Add X axis label:
-      // svg
-      //   .append("text")
-      //   .attr("text-anchor", "end")
-      //   .attr("x", width)
-      //   .attr("y", height + 40)
-      //   .text("Time (year)");
-
-      // // Add Y axis label:
-      // svg
-      //   .append("text")
-      //   .attr("text-anchor", "end")
-      //   .attr("x", 0)
-      //   .attr("y", -20)
-      //   .text("# of baby born")
-      //   .attr("text-anchor", "start");
-
-      // Add Y axis
-      const y = d3.scaleLinear().domain([0, 200000]).range([height, 0]);
-      svg.append("g").call(d3.axisLeft(y).ticks(0));
-
-      //////////
-      // BRUSHING AND CHART //
-      //////////
-
-      // Add a clipPath: everything out of this area won't be drawn.
-      const clip = svg
-        .append("defs")
-        .append("svg:clipPath")
-        .attr("id", "clip")
-        .append("svg:rect")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("x", 0)
-        .attr("y", 0);
-
-      // Add brushing
-      const brush = d3
-        .brushX() // Add the brush feature using the d3.brush function
-        .extent([
-          [0, 0],
-          [width, height],
-        ]) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
-        .on("end", updateChart); // Each time the brush selection changes, trigger the 'updateChart' function
-
-      // Create the scatter variable: where both the circles and the brush take place
-      const areaChart = svg.append("g").attr("clip-path", "url(#clip)");
-
-      // Area generator
-      const area = d3
-        .area()
-        .x(function (d) {
-          return x(d.data.year);
-        })
-        .y0(function (d) {
-          return y(d[0]);
-        })
-        .y1(function (d) {
-          return y(d[1]);
-        });
-
-      // Show the areas
-      areaChart
-        .selectAll("mylayers")
-        .data(stackedData)
-        .join("path")
-        .attr("class", function (d) {
-          return "myArea " + d.key;
-        })
-        .style("fill", function (d) {
-          return color(d.key);
-        })
-        .attr("d", area);
-
-      // Add the brushing
-      areaChart.append("g").attr("class", "brush").call(brush);
-
-      let idleTimeout;
-      function idled() {
-        idleTimeout = null;
+        );
+      } else {
+        x.domain([x.invert(extent[0]), x.invert(extent[1])]);
+        areaChart.select(".brush").call(brush.move, null); // This remove the grey brush area as soon as the selection has been done
       }
 
-      // A function that update the chart for given boundaries
-      function updateChart(event, d) {
-        extent = event.selection;
+      // Update axis and area position
+      xAxis.transition().duration(1000).call(d3.axisBottom(x).ticks(5));
+      areaChart.selectAll("path").transition().duration(1000).attr("d", area);
+    }
 
-        // If no selection, back to initial coordinate. Otherwise, update X axis domain
-        if (!extent) {
-          if (!idleTimeout) return (idleTimeout = setTimeout(idled, 350)); // This allows to wait a little bit
-          x.domain(
-            d3.extent(data, function (d) {
-              return d.year;
-            })
-          );
-        } else {
-          x.domain([x.invert(extent[0]), x.invert(extent[1])]);
-          areaChart.select(".brush").call(brush.move, null); // This remove the grey brush area as soon as the selection has been done
-        }
+    //////////
+    // HIGHLIGHT GROUP //
+    //////////
 
-        // Update axis and area position
-        xAxis.transition().duration(1000).call(d3.axisBottom(x).ticks(5));
-        areaChart.selectAll("path").transition().duration(1000).attr("d", area);
-      }
+    // What to do when one group is hovered
+    const highlight = function (event, d) {
+      // reduce opacity of all groups
+      d3.selectAll(".myArea").style("opacity", 0.1);
+      // expect the one that is hovered
+      d3.select("." + d).style("opacity", 1);
+    };
 
-      //////////
-      // HIGHLIGHT GROUP //
-      //////////
+    // And when it is not hovered anymore
+    const noHighlight = function (event, d) {
+      d3.selectAll(".myArea").style("opacity", 1);
+    };
 
-      // What to do when one group is hovered
-      const highlight = function (event, d) {
-        // reduce opacity of all groups
-        d3.selectAll(".myArea").style("opacity", 0.1);
-        // expect the one that is hovered
-        d3.select("." + d).style("opacity", 1);
-      };
+    ////////////
+    // LEGEND //
+    ////////////
 
-      // And when it is not hovered anymore
-      const noHighlight = function (event, d) {
-        d3.selectAll(".myArea").style("opacity", 1);
-      };
+    // Add one dot in the legend for each name.
+    const size = 20;
+    svg
+      .selectAll("myrect")
+      .data(keys)
+      .join("rect")
+      .attr("x", 400)
+      .attr("y", function (d, i) {
+        return 10 + i * (size + 5);
+      }) // 100 is where the first dot appears. 25 is the distance between dots
+      .attr("width", size)
+      .attr("height", size)
+      .style("fill", function (d) {
+        return color(d);
+      })
+      .on("mouseover", highlight)
+      .on("mouseleave", noHighlight);
 
-      //////////
-      // LEGEND //
-      //////////
-
-      // Add one dot in the legend for each name.
-      const size = 20;
-      svg
-        .selectAll("myrect")
-        .data(keys)
-        .join("rect")
-        .attr("x", 400)
-        .attr("y", function (d, i) {
-          return 10 + i * (size + 5);
-        }) // 100 is where the first dot appears. 25 is the distance between dots
-        .attr("width", size)
-        .attr("height", size)
-        .style("fill", function (d) {
-          return color(d);
-        })
-        .on("mouseover", highlight)
-        .on("mouseleave", noHighlight);
-
-      // Add one dot in the legend for each name.
-      svg
-        .selectAll("mylabels")
-        .data(keys)
-        .join("text")
-        .attr("x", 400 + size * 1.2)
-        .attr("y", function (d, i) {
-          return 10 + i * (size + 5) + size / 2;
-        }) // 100 is where the first dot appears. 25 is the distance between dots
-        .style("fill", function (d) {
-          return color(d);
-        })
-        .text(function (d) {
-          return d;
-        })
-        .attr("text-anchor", "left")
-        .style("alignment-baseline", "middle")
-        .on("mouseover", highlight)
-        .on("mouseleave", noHighlight);
-    });
+    // Add one dot in the legend for each name.
+    svg
+      .selectAll("mylabels")
+      .data(keys)
+      .join("text")
+      .attr("x", 400 + size * 1.2)
+      .attr("y", function (d, i) {
+        return 10 + i * (size + 5) + size / 2;
+      }) // 100 is where the first dot appears. 25 is the distance between dots
+      .style("fill", function (d) {
+        return color(d);
+      })
+      .text(function (d) {
+        return d;
+      })
+      .attr("text-anchor", "left")
+      .style("alignment-baseline", "middle")
+      .on("mouseover", highlight)
+      .on("mouseleave", noHighlight);
   }
 
   // TEST ZONE
@@ -1282,7 +1248,9 @@
     someHtmlUrl: "snippets/some-snippet.html",
     txsmapHtmlUrl: "snippets/txsmap-snippet.html",
     smallchartHtmlUrl: "snippets/small-chart-snippet.html",
-    baseUrl: "http://54.236.33.205:8000/",
+    overviewHtmlUrl: "snippets/overview-snippet.html",
+    // baseUrl: "http://54.236.33.205:8000/",
+    baseUrl: "http://localhost:8000/",
     //  baseUrl : "https://api.bitcoinpublico.com/";
   };
 
