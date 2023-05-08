@@ -1250,8 +1250,8 @@
     smallchartHtmlUrl: "snippets/small-chart-snippet.html",
     overviewHtmlUrl: "snippets/overview-snippet.html",
     // baseUrl: "http://54.236.33.205:8000/",
-    baseUrl: "http://localhost:8000/",
-    //  baseUrl : "https://api.bitcoinpublico.com/";
+    // baseUrl: "http://localhost:8000/",
+    baseUrl : "https://api.bitcoinpublico.com/"
   };
 
   const homeCards = {
