@@ -489,176 +489,176 @@
       });
   }
 
-  function treemapLargeB(data, tag) {
-    // Define chart dimensions and margins
-    var margin = { top: 10, right: 10, bottom: 10, left: 25 },
-      width = 600 - margin.left - margin.right,
-      // d3.select(".chart-content").node().offsetWidth - margin.left - margin.right,
-      // width = 750 - margin.left - margin.right,
-      height = 600 - margin.top - margin.bottom;
+  // function treemapLargeB(data, tag) {
+  //   // Define chart dimensions and margins
+  //   var margin = { top: 10, right: 10, bottom: 10, left: 25 },
+  //     width = 600 - margin.left - margin.right,
+  //     // d3.select(".chart-content").node().offsetWidth - margin.left - margin.right,
+  //     // width = 750 - margin.left - margin.right,
+  //     height = 600 - margin.top - margin.bottom;
 
-    // append the svg object to the body of the page
-    const svg = d3
-      .select(tag)
-      .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", `translate(${margin.left}, ${margin.top})`);
+  //   // append the svg object to the body of the page
+  //   const svg = d3
+  //     .select(tag)
+  //     .append("svg")
+  //     .attr("width", width + margin.left + margin.right)
+  //     .attr("height", height + margin.top + margin.bottom)
+  //     .append("g")
+  //     .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-    // read json data
-    // Give the data to this cluster layout:
-    const root = d3.hierarchy(data).sum(function (d) {
-      return d.value;
-    }); // Here the size of each leave is given in the 'value' field in input data
+  //   // read json data
+  //   // Give the data to this cluster layout:
+  //   const root = d3.hierarchy(data).sum(function (d) {
+  //     return d.value;
+  //   }); // Here the size of each leave is given in the 'value' field in input data
 
-    // Then d3.treemap computes the position of each element of the hierarchy
-    d3
-      .treemap()
-      .size([width, height])
-      .paddingTop(0)
-      .paddingRight(7)
-      .paddingInner(3)(
-      // Padding between each rectangle
-      //.paddingOuter(6)
-      //.padding(20)
-      root
-    );
+  //   // Then d3.treemap computes the position of each element of the hierarchy
+  //   d3
+  //     .treemap()
+  //     .size([width, height])
+  //     .paddingTop(0)
+  //     .paddingRight(7)
+  //     .paddingInner(3)(
+  //     // Padding between each rectangle
+  //     //.paddingOuter(6)
+  //     //.padding(20)
+  //     root
+  //   );
 
-    // prepare a color scale
-    const color = d3
-      .scaleOrdinal()
-      .domain(["boss1", "boss2", "boss3"])
-      .range(["#df88b7", "#ffc000", "#9bca53"]);
+  //   // prepare a color scale
+  //   const color = d3
+  //     .scaleOrdinal()
+  //     .domain(["boss1", "boss2", "boss3"])
+  //     .range(["#df88b7", "#ffc000", "#9bca53"]);
 
-    // And a opacity scale
-    const opacity = d3.scaleLinear().domain([10, 30]).range([0.5, 1]);
+  //   // And a opacity scale
+  //   const opacity = d3.scaleLinear().domain([10, 30]).range([0.5, 1]);
 
-    // create a tooltip
-    var Tooltip = d3
-      .select(tag)
-      .append("div")
-      .style("opacity", 0)
-      .attr("class", "tooltip")
-      .style("background-color", "white")
-      .style("border", "solid")
-      .style("border-width", "2px")
-      .style("border-radius", "5px")
-      .style("padding", "5px");
+  //   // create a tooltip
+  //   var Tooltip = d3
+  //     .select(tag)
+  //     .append("div")
+  //     .style("opacity", 0)
+  //     .attr("class", "tooltip")
+  //     .style("background-color", "white")
+  //     .style("border", "solid")
+  //     .style("border-width", "2px")
+  //     .style("border-radius", "5px")
+  //     .style("padding", "5px");
 
-    // Three function that change the tooltip when user hover / move / leave a cell
-    var mouseover = function (d) {
-      Tooltip.style("opacity", 1);
-      d3.select(this).style("stroke", "black").style("opacity", 1);
-    };
-    var mousemove = function (d) {
-      Tooltip.html("The exact value of<br>this cell is: " + d.value)
-        .style("left", d3.mouse(this)[0] + 70 + "px")
-        .style("top", d3.mouse(this)[1] + "px");
-    };
-    var mouseleave = function (d) {
-      Tooltip.style("opacity", 0);
-      d3.select(this).style("stroke", "none").style("opacity", 0.8);
-    };
+  //   // Three function that change the tooltip when user hover / move / leave a cell
+  //   var mouseover = function (d) {
+  //     Tooltip.style("opacity", 1);
+  //     d3.select(this).style("stroke", "black").style("opacity", 1);
+  //   };
+  //   var mousemove = function (d) {
+  //     Tooltip.html("The exact value of<br>this cell is: " + d.value)
+  //       .style("left", d3.mouse(this)[0] + 70 + "px")
+  //       .style("top", d3.mouse(this)[1] + "px");
+  //   };
+  //   var mouseleave = function (d) {
+  //     Tooltip.style("opacity", 0);
+  //     d3.select(this).style("stroke", "none").style("opacity", 0.8);
+  //   };
 
-    // use this information to add rectangles:
-    svg
-      .selectAll("rect")
-      .data(root.leaves())
-      .join("rect")
-      .attr("x", function (d) {
-        return d.x0;
-      })
-      .attr("y", function (d) {
-        return d.y0;
-      })
-      .attr("width", function (d) {
-        return d.x1 - d.x0;
-      })
-      .attr("height", function (d) {
-        return d.y1 - d.y0;
-      })
-      .style("stroke", "black")
-      .style("fill", function (d) {
-        return color(d.parent.data.name);
-      })
-      .style("opacity", function (d) {
-        return opacity(d.data.value);
-      })
-      .on("click", function (event, d) {
-        // console.log(`Clicked on ${d}`);
-        showDetail(d);
-      });
+  //   // use this information to add rectangles:
+  //   svg
+  //     .selectAll("rect")
+  //     .data(root.leaves())
+  //     .join("rect")
+  //     .attr("x", function (d) {
+  //       return d.x0;
+  //     })
+  //     .attr("y", function (d) {
+  //       return d.y0;
+  //     })
+  //     .attr("width", function (d) {
+  //       return d.x1 - d.x0;
+  //     })
+  //     .attr("height", function (d) {
+  //       return d.y1 - d.y0;
+  //     })
+  //     .style("stroke", "black")
+  //     .style("fill", function (d) {
+  //       return color(d.parent.data.name);
+  //     })
+  //     .style("opacity", function (d) {
+  //       return opacity(d.data.value);
+  //     })
+  //     .on("click", function (event, d) {
+  //       // console.log(`Clicked on ${d}`);
+  //       showDetail(d);
+  //     });
 
-    // and to add the text labels
-    svg
-      .selectAll("text")
-      .data(root.leaves())
-      .enter()
-      .append("text")
-      .attr("x", function (d) {
-        return d.x0 + 5;
-      }) // +10 to adjust position (more right)
-      .attr("y", function (d) {
-        return d.y0 + 20;
-      }) // +20 to adjust position (lower)
-      .text(function (d) {
-        return d.data.name.replace("mister_", "");
-      })
-      .attr("font-size", "19px")
-      .attr("fill", "white");
+  //   // and to add the text labels
+  //   svg
+  //     .selectAll("text")
+  //     .data(root.leaves())
+  //     .enter()
+  //     .append("text")
+  //     .attr("x", function (d) {
+  //       return d.x0 + 5;
+  //     }) // +10 to adjust position (more right)
+  //     .attr("y", function (d) {
+  //       return d.y0 + 20;
+  //     }) // +20 to adjust position (lower)
+  //     .text(function (d) {
+  //       return d.data.name.replace("mister_", "");
+  //     })
+  //     .attr("font-size", "19px")
+  //     .attr("fill", "white");
 
-    // and to add the text labels
-    svg
-      .selectAll("vals")
-      .data(root.leaves())
-      .enter()
-      .append("text")
-      .attr("x", function (d) {
-        return d.x0 + 5;
-      }) // +10 to adjust position (more right)
-      .attr("y", function (d) {
-        return d.y0 + 35;
-      }) // +20 to adjust position (lower)
-      .text(function (d) {
-        return d.data.value;
-      })
-      .attr("font-size", "11px")
-      .attr("fill", "white");
+  //   // and to add the text labels
+  //   svg
+  //     .selectAll("vals")
+  //     .data(root.leaves())
+  //     .enter()
+  //     .append("text")
+  //     .attr("x", function (d) {
+  //       return d.x0 + 5;
+  //     }) // +10 to adjust position (more right)
+  //     .attr("y", function (d) {
+  //       return d.y0 + 35;
+  //     }) // +20 to adjust position (lower)
+  //     .text(function (d) {
+  //       return d.data.value;
+  //     })
+  //     .attr("font-size", "11px")
+  //     .attr("fill", "white");
 
-    // Add title for the 3 groups
-    // svg
-    //   .selectAll("titles")
-    //   .data(
-    //     root.descendants().filter(function (d) {
-    //       return d.depth == 1;
-    //     })
-    //   )
-    //   .enter()
-    //   .append("text")
-    //   .attr("x", function (d) {
-    //     return d.x0;
-    //   })
-    //   .attr("y", function (d) {
-    //     return d.y0 + 210;
-    //   })
-    //   .text(function (d) {
-    //     return d.data.name;
-    //   })
-    //   .attr("font-size", "19px")
-    //   .attr("fill", function (d) {
-    //     return color(d.data.name);
-    //   });
+  //   // Add title for the 3 groups
+  //   // svg
+  //   //   .selectAll("titles")
+  //   //   .data(
+  //   //     root.descendants().filter(function (d) {
+  //   //       return d.depth == 1;
+  //   //     })
+  //   //   )
+  //   //   .enter()
+  //   //   .append("text")
+  //   //   .attr("x", function (d) {
+  //   //     return d.x0;
+  //   //   })
+  //   //   .attr("y", function (d) {
+  //   //     return d.y0 + 210;
+  //   //   })
+  //   //   .text(function (d) {
+  //   //     return d.data.name;
+  //   //   })
+  //   //   .attr("font-size", "19px")
+  //   //   .attr("fill", function (d) {
+  //   //     return color(d.data.name);
+  //   //   });
 
-    // Add title for the 3 groups
-    svg
-      .append("text")
-      .attr("x", 0)
-      // .attr("y", 14) // +20 to adjust position (lower)
-      // .text("Three group leaders and 14 employees")
-      .attr("font-size", "19px")
-      .attr("fill", "grey");
-  }
+  //   // Add title for the 3 groups
+  //   svg
+  //     .append("text")
+  //     .attr("x", 0)
+  //     // .attr("y", 14) // +20 to adjust position (lower)
+  //     // .text("Three group leaders and 14 employees")
+  //     .attr("font-size", "19px")
+  //     .attr("fill", "grey");
+  // }
 
   function treemapLarge(data, tag) {
     //   "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_hierarchy_1level.csv"
@@ -675,11 +675,17 @@
       width = 600 - margin.left - margin.right,
       height = 600 - margin.top - margin.bottom;
 
-      const tooltip = d3
+    const tooltip = d3
       .select(tag)
       .append("div")
       .attr("class", "tooltip")
-      .style("opacity", 0);      
+      .style("opacity", 0)
+      .style("background-color", "#f1f1f1") // Change the background color here
+      .style("border", "solid")
+      .style("border-color", "#0b2447") // Change the border color here
+      .style("border-width", "1px")
+      .style("border-radius", "5px")
+      .style("padding", "5px");
 
     // append the svg object to the body of the page
     const svg = d3
@@ -710,7 +716,6 @@
     // The coordinates are added to the root object above
     d3.treemap().size([width, height]).padding(4)(root);
 
-
     // Define the minimum and maximum values for opacity calculation
     const minValue = d3.min(root.leaves(), (d) => +d.data.value);
     const maxValue = d3.max(root.leaves(), (d) => +d.data.value);
@@ -720,7 +725,7 @@
       .domain([minValue, maxValue])
       .range([0.5, 1]);
 
-      svg
+    svg
       .selectAll("rect")
       .data(root.leaves())
       .join("rect")
@@ -728,15 +733,17 @@
       .attr("y", (d) => d.y0)
       .attr("width", (d) => d.x1 - d.x0)
       .attr("height", (d) => d.y1 - d.y0)
+      .style("stroke", "#0b2447")
+      .style("stroke-width", "1px")
       .style("fill", "#576cbc")
       .style("opacity", (d) => opacityScale(d.data.value))
       .on("mouseover", (event, d) => {
         tooltip
-          .style("opacity", 1)
-          .html("The exact value of this cell is: " + d.data.value)
-          .style("left", event.pageX + 10 + "px")
-          .style("top", event.pageY + 10 + "px");
-      })
+        .style("opacity", 1)
+        .html("Fee: " + d.data.value + "<br/>Size: " + d.data.size)
+        .style("left", event.pageX + 10 + "px")
+        .style("top", event.pageY - 10 + "px");
+            })
       .on("mousemove", (event) => {
         tooltip
           .style("left", event.pageX + 10 + "px")
@@ -759,76 +766,76 @@
         return d.x0 + 10;
       }) // +10 to adjust position (more right)
       .attr("y", function (d) {
-        return d.y0 + 20;
+        return d.y0 + 12;
       }) // +20 to adjust position (lower)
       .text(function (d) {
         return d.data.name;
       })
       .attr("font-size", "15px")
-      .attr("fill", "#A5D7E8");
+      .attr("fill", "#E9F5FA");
   }
 
-  function treemapS(data, tag) {
-    data.unshift({
-      name: "Origin",
-      parent: "",
-      size: "",
-      value: "",
-    });
-    data["columns"] = ["name", "parent", "size", "value"];
+  // function treemapS(data, tag) {
+  //   data.unshift({
+  //     name: "Origin",
+  //     parent: "",
+  //     size: "",
+  //     value: "",
+  //   });
+  //   data["columns"] = ["name", "parent", "size", "value"];
 
-    // set the dimensions and margins of the graph
-    var margin = { top: 10, right: 10, bottom: 10, left: 10 },
-      width = 270 - margin.left - margin.right,
-      height = 220 - margin.top - margin.bottom;
+  //   // set the dimensions and margins of the graph
+  //   var margin = { top: 10, right: 10, bottom: 10, left: 10 },
+  //     width = 270 - margin.left - margin.right,
+  //     height = 220 - margin.top - margin.bottom;
 
-    // append the svg object to the body of the page
-    const svg = d3
-      .select(tag)
-      .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", `translate(${margin.left}, ${margin.top})`);
+  //   // append the svg object to the body of the page
+  //   const svg = d3
+  //     .select(tag)
+  //     .append("svg")
+  //     .attr("width", width + margin.left + margin.right)
+  //     .attr("height", height + margin.top + margin.bottom)
+  //     .append("g")
+  //     .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-    // stratify the data: reformatting for d3.js
-    const root = d3
-      .stratify()
-      .id(function (d) {
-        return d.name;
-      })
-      .parentId(function (d) {
-        return d.parent;
-      })(data);
+  //   // stratify the data: reformatting for d3.js
+  //   const root = d3
+  //     .stratify()
+  //     .id(function (d) {
+  //       return d.name;
+  //     })
+  //     .parentId(function (d) {
+  //       return d.parent;
+  //     })(data);
 
-    root.sum(function (d) {
-      return +d.size;
-    });
+  //   root.sum(function (d) {
+  //     return +d.size;
+  //   });
 
-    // Then d3.treemap computes the position of each element of the hierarchy
-    // The coordinates are added to the root object above
-    d3.treemap().size([width, height]).padding(4)(root);
+  //   // Then d3.treemap computes the position of each element of the hierarchy
+  //   // The coordinates are added to the root object above
+  //   d3.treemap().size([width, height]).padding(4)(root);
 
-    // Define the minimum and maximum values for opacity calculation
-    const minValue = d3.min(root.leaves(), (d) => +d.data.value);
-    const maxValue = d3.max(root.leaves(), (d) => +d.data.value);
+  //   // Define the minimum and maximum values for opacity calculation
+  //   const minValue = d3.min(root.leaves(), (d) => +d.data.value);
+  //   const maxValue = d3.max(root.leaves(), (d) => +d.data.value);
 
-    const opacityScale = d3
-      .scaleLinear()
-      .domain([minValue, maxValue])
-      .range([0.5, 1]);
+  //   const opacityScale = d3
+  //     .scaleLinear()
+  //     .domain([minValue, maxValue])
+  //     .range([0.5, 1]);
 
-    svg
-      .selectAll("rect")
-      .data(root.leaves())
-      .join("rect")
-      .attr("x", (d) => d.x0)
-      .attr("y", (d) => d.y0)
-      .attr("width", (d) => d.x1 - d.x0)
-      .attr("height", (d) => d.y1 - d.y0)
-      .style("fill", "#576cbc")
-      .style("opacity", (d) => opacityScale(d.data.value));
-  }
+  //   svg
+  //     .selectAll("rect")
+  //     .data(root.leaves())
+  //     .join("rect")
+  //     .attr("x", (d) => d.x0)
+  //     .attr("y", (d) => d.y0)
+  //     .attr("width", (d) => d.x1 - d.x0)
+  //     .attr("height", (d) => d.y1 - d.y0)
+  //     .style("fill", "#576cbc")
+  //     .style("opacity", (d) => opacityScale(d.data.value));
+  // }
 
   function treemapSmall(data, tag) {
     data.unshift({
