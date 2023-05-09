@@ -7,6 +7,7 @@
     headerHTML();
     mainHtml();
     footerHTML();
+
   });
 
   dc.loadDashboard = function (cardId) {
@@ -90,6 +91,7 @@
         cardHTML(homeCards.cardA);
         cardHTML(homeCards.cardB);
         cardHTML(homeCards.cardC);
+        cardHTML(homeCards.cardD);
       },
       false
     );
@@ -118,6 +120,8 @@
         $ajaxUtils.sendGetRequest(
           urls.baseUrl + "get_fee_size_block",
           function (data) {
+            console.log('get_fee_size_block')
+            console.log(data)
             treemapSmall(data, "#" + card.chart);
           },
           true
@@ -142,7 +146,13 @@
         );
         break;
       case "D":
-        // ... and so on
+        $ajaxUtils.sendGetRequest(
+          urls.baseUrl + "get_fee_size_block",
+          function (data) {
+            treemapSmallD(data, "#" + card.chart);
+          },
+          true
+        );
         break;
       case "E":
         // ... and so on
@@ -351,11 +361,10 @@
   }
 
   // CHARTS
-  // 
+  //
   // area graph: "https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/5_OneCatSevNumOrdered_wide.csv"
   // treemap: "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_dendrogram_full.json"
   // bar chart: "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_stacked.csv"
-
 
   function barChartSmall(ddata, tag) {
     // Define chart dimensions and margins
@@ -501,179 +510,6 @@
       .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
     // read json data
-      // Give the data to this cluster layout:
-      const root = d3.hierarchy(data).sum(function (d) {
-        return d.value;
-      }); // Here the size of each leave is given in the 'value' field in input data
-
-      // Then d3.treemap computes the position of each element of the hierarchy
-      d3
-        .treemap()
-        .size([width, height])
-        .paddingTop(0)
-        .paddingRight(7)
-        .paddingInner(3)(
-        // Padding between each rectangle
-        //.paddingOuter(6)
-        //.padding(20)
-        root
-      );
-
-      // prepare a color scale
-      const color = d3
-        .scaleOrdinal()
-        .domain(["boss1", "boss2", "boss3"])
-        .range(["#df88b7", "#ffc000", "#9bca53"]);
-
-      // And a opacity scale
-      const opacity = d3.scaleLinear().domain([10, 30]).range([0.5, 1]);
-
-      // create a tooltip
-      var Tooltip = d3
-        .select(tag)
-        .append("div")
-        .style("opacity", 0)
-        .attr("class", "tooltip")
-        .style("background-color", "white")
-        .style("border", "solid")
-        .style("border-width", "2px")
-        .style("border-radius", "5px")
-        .style("padding", "5px");
-
-      // Three function that change the tooltip when user hover / move / leave a cell
-      var mouseover = function (d) {
-        Tooltip.style("opacity", 1);
-        d3.select(this).style("stroke", "black").style("opacity", 1);
-      };
-      var mousemove = function (d) {
-        Tooltip.html("The exact value of<br>this cell is: " + d.value)
-          .style("left", d3.mouse(this)[0] + 70 + "px")
-          .style("top", d3.mouse(this)[1] + "px");
-      };
-      var mouseleave = function (d) {
-        Tooltip.style("opacity", 0);
-        d3.select(this).style("stroke", "none").style("opacity", 0.8);
-      };
-
-      // use this information to add rectangles:
-      svg
-        .selectAll("rect")
-        .data(root.leaves())
-        .join("rect")
-        .attr("x", function (d) {
-          return d.x0;
-        })
-        .attr("y", function (d) {
-          return d.y0;
-        })
-        .attr("width", function (d) {
-          return d.x1 - d.x0;
-        })
-        .attr("height", function (d) {
-          return d.y1 - d.y0;
-        })
-        .style("stroke", "black")
-        .style("fill", function (d) {
-          return color(d.parent.data.name);
-        })
-        .style("opacity", function (d) {
-          return opacity(d.data.value);
-        })
-        .on("click", function (event, d) {
-          // console.log(`Clicked on ${d}`);
-          showDetail(d);
-        });
-
-      // and to add the text labels
-      svg
-        .selectAll("text")
-        .data(root.leaves())
-        .enter()
-        .append("text")
-        .attr("x", function (d) {
-          return d.x0 + 5;
-        }) // +10 to adjust position (more right)
-        .attr("y", function (d) {
-          return d.y0 + 20;
-        }) // +20 to adjust position (lower)
-        .text(function (d) {
-          return d.data.name.replace("mister_", "");
-        })
-        .attr("font-size", "19px")
-        .attr("fill", "white");
-
-      // and to add the text labels
-      svg
-        .selectAll("vals")
-        .data(root.leaves())
-        .enter()
-        .append("text")
-        .attr("x", function (d) {
-          return d.x0 + 5;
-        }) // +10 to adjust position (more right)
-        .attr("y", function (d) {
-          return d.y0 + 35;
-        }) // +20 to adjust position (lower)
-        .text(function (d) {
-          return d.data.value;
-        })
-        .attr("font-size", "11px")
-        .attr("fill", "white");
-
-      // Add title for the 3 groups
-      // svg
-      //   .selectAll("titles")
-      //   .data(
-      //     root.descendants().filter(function (d) {
-      //       return d.depth == 1;
-      //     })
-      //   )
-      //   .enter()
-      //   .append("text")
-      //   .attr("x", function (d) {
-      //     return d.x0;
-      //   })
-      //   .attr("y", function (d) {
-      //     return d.y0 + 210;
-      //   })
-      //   .text(function (d) {
-      //     return d.data.name;
-      //   })
-      //   .attr("font-size", "19px")
-      //   .attr("fill", function (d) {
-      //     return color(d.data.name);
-      //   });
-
-      // Add title for the 3 groups
-      svg
-        .append("text")
-        .attr("x", 0)
-        // .attr("y", 14) // +20 to adjust position (lower)
-        // .text("Three group leaders and 14 employees")
-        .attr("font-size", "19px")
-        .attr("fill", "grey");
-  }
-
-  function treemapSmall(ddata, tag) {
-    // Define chart dimensions and margins
-    var margin = { top: 10, right: 10, bottom: 10, left: 10 },
-      width = 280 - margin.left - margin.right,
-      height = 220 - margin.top - margin.bottom;
-
-    // append the svg object to the body of the page
-    const svg = d3
-      .select(tag)
-      .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", `translate(${margin.left}, ${margin.top})`);
-
-    // read json data
-    // d3.json(
-    //   "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_dendrogram_full.json"
-    // ).then(function (data) {
-    console.log(data);
     // Give the data to this cluster layout:
     const root = d3.hierarchy(data).sum(function (d) {
       return d.value;
@@ -701,6 +537,33 @@
     // And a opacity scale
     const opacity = d3.scaleLinear().domain([10, 30]).range([0.5, 1]);
 
+    // create a tooltip
+    var Tooltip = d3
+      .select(tag)
+      .append("div")
+      .style("opacity", 0)
+      .attr("class", "tooltip")
+      .style("background-color", "white")
+      .style("border", "solid")
+      .style("border-width", "2px")
+      .style("border-radius", "5px")
+      .style("padding", "5px");
+
+    // Three function that change the tooltip when user hover / move / leave a cell
+    var mouseover = function (d) {
+      Tooltip.style("opacity", 1);
+      d3.select(this).style("stroke", "black").style("opacity", 1);
+    };
+    var mousemove = function (d) {
+      Tooltip.html("The exact value of<br>this cell is: " + d.value)
+        .style("left", d3.mouse(this)[0] + 70 + "px")
+        .style("top", d3.mouse(this)[1] + "px");
+    };
+    var mouseleave = function (d) {
+      Tooltip.style("opacity", 0);
+      d3.select(this).style("stroke", "none").style("opacity", 0.8);
+    };
+
     // use this information to add rectangles:
     svg
       .selectAll("rect")
@@ -718,8 +581,7 @@
       .attr("height", function (d) {
         return d.y1 - d.y0;
       })
-      .style("stroke", "#576CBC")
-      .style("stroke-width", "1px")
+      .style("stroke", "black")
       .style("fill", function (d) {
         return color(d.parent.data.name);
       })
@@ -727,8 +589,230 @@
         return opacity(d.data.value);
       })
       .on("click", function (event, d) {
+        // console.log(`Clicked on ${d}`);
         showDetail(d);
       });
+
+    // and to add the text labels
+    svg
+      .selectAll("text")
+      .data(root.leaves())
+      .enter()
+      .append("text")
+      .attr("x", function (d) {
+        return d.x0 + 5;
+      }) // +10 to adjust position (more right)
+      .attr("y", function (d) {
+        return d.y0 + 20;
+      }) // +20 to adjust position (lower)
+      .text(function (d) {
+        return d.data.name.replace("mister_", "");
+      })
+      .attr("font-size", "19px")
+      .attr("fill", "white");
+
+    // and to add the text labels
+    svg
+      .selectAll("vals")
+      .data(root.leaves())
+      .enter()
+      .append("text")
+      .attr("x", function (d) {
+        return d.x0 + 5;
+      }) // +10 to adjust position (more right)
+      .attr("y", function (d) {
+        return d.y0 + 35;
+      }) // +20 to adjust position (lower)
+      .text(function (d) {
+        return d.data.value;
+      })
+      .attr("font-size", "11px")
+      .attr("fill", "white");
+
+    // Add title for the 3 groups
+    // svg
+    //   .selectAll("titles")
+    //   .data(
+    //     root.descendants().filter(function (d) {
+    //       return d.depth == 1;
+    //     })
+    //   )
+    //   .enter()
+    //   .append("text")
+    //   .attr("x", function (d) {
+    //     return d.x0;
+    //   })
+    //   .attr("y", function (d) {
+    //     return d.y0 + 210;
+    //   })
+    //   .text(function (d) {
+    //     return d.data.name;
+    //   })
+    //   .attr("font-size", "19px")
+    //   .attr("fill", function (d) {
+    //     return color(d.data.name);
+    //   });
+
+    // Add title for the 3 groups
+    svg
+      .append("text")
+      .attr("x", 0)
+      // .attr("y", 14) // +20 to adjust position (lower)
+      // .text("Three group leaders and 14 employees")
+      .attr("font-size", "19px")
+      .attr("fill", "grey");
+  }
+
+  function treemapSmall(data, tag) {
+    // Define chart dimensions and margins
+    var margin = { top: 10, right: 10, bottom: 10, left: 10 },
+      width = 280 - margin.left - margin.right,
+      height = 220 - margin.top - margin.bottom;
+
+    // append the svg object to the body of the page
+    const svg = d3
+      .select(tag)
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+    // read json data
+      console.log(data);
+      // Give the data to this cluster layout:
+      const root = d3.hierarchy(data).sum(function (d) {
+        return d.value;
+      }); // Here the size of each leave is given in the 'value' field in input data
+
+      // Then d3.treemap computes the position of each element of the hierarchy
+      d3
+        .treemap()
+        .size([width, height])
+        .paddingTop(0)
+        .paddingRight(7)
+        .paddingInner(3)(
+        // Padding between each rectangle
+        //.paddingOuter(6)
+        //.padding(20)
+        root
+      );
+
+      // prepare a color scale
+      const color = d3
+        .scaleOrdinal()
+        .domain(["boss1", "boss2", "boss3"])
+        .range(["#df88b7", "#ffc000", "#9bca53"]);
+
+      // And a opacity scale
+      const opacity = d3.scaleLinear().domain([10, 30]).range([0.5, 1]);
+
+      // use this information to add rectangles:
+      svg
+        .selectAll("rect")
+        .data(root.leaves())
+        .join("rect")
+        .attr("x", function (d) {
+          return d.x0;
+        })
+        .attr("y", function (d) {
+          return d.y0;
+        })
+        .attr("width", function (d) {
+          return d.x1 - d.x0;
+        })
+        .attr("height", function (d) {
+          return d.y1 - d.y0;
+        })
+        .style("stroke", "#576CBC")
+        .style("stroke-width", "1px")
+        .style("fill", function (d) {
+          return color(d.parent.data.name);
+        })
+        .style("opacity", function (d) {
+          return opacity(d.data.value);
+        })
+        .on("click", function (event, d) {
+          showDetail(d);
+        });
+  }
+
+  function treemapSmallD(ddata, tag) {
+    // Define chart dimensions and margins
+    var margin = { top: 10, right: 10, bottom: 10, left: 10 },
+      width = 280 - margin.left - margin.right,
+      height = 220 - margin.top - margin.bottom;
+
+    // append the svg object to the body of the page
+    const svg = d3
+      .select(tag)
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+    // read json data
+    d3.json(
+      "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_dendrogram_full.json"
+    ).then(function (data) {
+      // console.log(data);
+      // Give the data to this cluster layout:
+      const root = d3.hierarchy(data).sum(function (d) {
+        return d.value;
+      }); // Here the size of each leave is given in the 'value' field in input data
+
+      // Then d3.treemap computes the position of each element of the hierarchy
+      d3
+        .treemap()
+        .size([width, height])
+        .paddingTop(0)
+        .paddingRight(7)
+        .paddingInner(3)(
+        // Padding between each rectangle
+        //.paddingOuter(6)
+        //.padding(20)
+        root
+      );
+
+      // prepare a color scale
+      const color = d3
+        .scaleOrdinal()
+        .domain(["boss1", "boss2", "boss3"])
+        .range(["#df88b7", "#ffc000", "#9bca53"]);
+
+      // And a opacity scale
+      const opacity = d3.scaleLinear().domain([10, 30]).range([0.5, 1]);
+
+      // use this information to add rectangles:
+      svg
+        .selectAll("rect")
+        .data(root.leaves())
+        .join("rect")
+        .attr("x", function (d) {
+          return d.x0;
+        })
+        .attr("y", function (d) {
+          return d.y0;
+        })
+        .attr("width", function (d) {
+          return d.x1 - d.x0;
+        })
+        .attr("height", function (d) {
+          return d.y1 - d.y0;
+        })
+        .style("stroke", "#576CBC")
+        .style("stroke-width", "1px")
+        .style("fill", function (d) {
+          return color(d.parent.data.name);
+        })
+        .style("opacity", function (d) {
+          return opacity(d.data.value);
+        })
+        .on("click", function (event, d) {
+          showDetail(d);
+        });
+    });
   }
 
   function areaGraphLarge(ddata, tag) {
@@ -949,7 +1033,7 @@
   function areaGraphSmall(dataBody, tag) {
     columns = dataBody.columns;
     data = dataBody.data;
-    console.log(data);
+    // console.log(data);
     // Define chart dimensions and margins
     var margin = { top: 10, right: 10, bottom: 10, left: 10 },
       width = 280 - margin.left - margin.right,
@@ -970,15 +1054,15 @@
 
     // List of groups = header of the csv files
     const keys = columns.slice(1);
-    console.log(keys)
+    // console.log(keys);
 
     // color palette
     const color = d3.scaleOrdinal().domain(keys).range(d3.schemeSet2);
-    console.log(color)
+    // console.log(color);
 
     //stack the data?
     const stackedData = d3.stack().keys(keys)(data);
-    console.log(stackedData)
+    // console.log(stackedData);
 
     //////////
     // AXIS //
@@ -1048,7 +1132,7 @@
       .data(stackedData)
       .join("path")
       .attr("class", function (d) {
-        console.log("d " + d);
+        // console.log("d " + d);
         return "myArea " + d.key;
       })
       .style("fill", function (d) {
@@ -1149,7 +1233,7 @@
   // TEST ZONE
 
   function bigBarChart(data, tag) {
-    console.log(data);
+    // console.log(data);
 
     // Extract block size data from API response
     var blockSizes = data.map(function (d) {
@@ -1249,9 +1333,9 @@
     txsmapHtmlUrl: "snippets/txsmap-snippet.html",
     smallchartHtmlUrl: "snippets/small-chart-snippet.html",
     overviewHtmlUrl: "snippets/overview-snippet.html",
-    // baseUrl: "http://54.236.33.205:8000/",
-    // baseUrl: "http://localhost:8000/",
-    baseUrl : "https://api.bitcoinpublico.com/"
+    // baseUrl: "http://54.236.33.205:8000/"
+    // baseUrl: "http://localhost:8000/"
+    baseUrl: "https://api.bitcoinpublico.com/",
   };
 
   const homeCards = {
