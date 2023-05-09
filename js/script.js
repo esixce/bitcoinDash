@@ -740,14 +740,16 @@
       .on("mouseover", (event, d) => {
         tooltip
         .style("opacity", 1)
-        .html("Fee: " + d.data.value + "<br/>Size: " + d.data.size)
-        .style("left", event.pageX + 10 + "px")
-        .style("top", event.pageY - 10 + "px");
+        .html("Block:" + d.data.name + "<br/>Fee: " + d.data.value + "<br/>Size: " + d.data.size)
+        .style("left", event.pageX - 90 + "px")
+        .style("top", event.pageY - 90 + "px");
+        // .style("left", event.pageX + 0 + "px")
+        // .style("top", event.pageY - 0 + "px");
             })
       .on("mousemove", (event) => {
         tooltip
-          .style("left", event.pageX + 10 + "px")
-          .style("top", event.pageY + 10 + "px");
+          .style("left", event.pageX - 90 + "px")
+          .style("top", event.pageY - 90 + "px");
       })
       .on("mouseleave", () => {
         tooltip.style("opacity", 0);
