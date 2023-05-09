@@ -489,7 +489,7 @@
       });
   }
 
-  function treemapLarge(data, tag) {
+  function treemapLargeB(data, tag) {
     // Define chart dimensions and margins
     var margin = { top: 10, right: 10, bottom: 10, left: 25 },
       width = 600 - margin.left - margin.right,
@@ -660,21 +660,26 @@
       .attr("fill", "grey");
   }
 
-  function treemapSmall(data, tag) {
-    // console.log("treemapSmall");
-    // console.log(data);
+  function treemapLarge(data, tag) {
+    //   "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_hierarchy_1level.csv"
     data.unshift({
       name: "Origin",
       parent: "",
+      size: "",
       value: "",
     });
-    data['columns'] = ['name', 'parent', 'value']
-    // console.log(data);
+    data["columns"] = ["name", "parent", "size", "value"];
 
     // set the dimensions and margins of the graph
     var margin = { top: 10, right: 10, bottom: 10, left: 10 },
-      width = 280 - margin.left - margin.right,
-      height = 220 - margin.top - margin.bottom;
+      width = 600 - margin.left - margin.right,
+      height = 600 - margin.top - margin.bottom;
+
+      const tooltip = d3
+      .select(tag)
+      .append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);      
 
     // append the svg object to the body of the page
     const svg = d3
@@ -685,13 +690,6 @@
       .append("g")
       .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-      // d3.csv(
-      //   "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_hierarchy_1level.csv"
-      // ).then(function (data) {
-      //   console.log("original");
-      //   console.log(data);
-      // })
-  
     // stratify the data: reformatting for d3.js
     const root = d3
       .stratify()
@@ -705,50 +703,194 @@
       data
     );
     root.sum(function (d) {
-      return +d.value;
+      return +d.size;
     }); // Compute the numeric value for each entity
 
     // Then d3.treemap computes the position of each element of the hierarchy
     // The coordinates are added to the root object above
     d3.treemap().size([width, height]).padding(4)(root);
 
-    // use this information to add rectangles:
+
+    // Define the minimum and maximum values for opacity calculation
+    const minValue = d3.min(root.leaves(), (d) => +d.data.value);
+    const maxValue = d3.max(root.leaves(), (d) => +d.data.value);
+
+    const opacityScale = d3
+      .scaleLinear()
+      .domain([minValue, maxValue])
+      .range([0.5, 1]);
+
+      svg
+      .selectAll("rect")
+      .data(root.leaves())
+      .join("rect")
+      .attr("x", (d) => d.x0)
+      .attr("y", (d) => d.y0)
+      .attr("width", (d) => d.x1 - d.x0)
+      .attr("height", (d) => d.y1 - d.y0)
+      .style("fill", "#576cbc")
+      .style("opacity", (d) => opacityScale(d.data.value))
+      .on("mouseover", (event, d) => {
+        tooltip
+          .style("opacity", 1)
+          .html("The exact value of this cell is: " + d.data.value)
+          .style("left", event.pageX + 10 + "px")
+          .style("top", event.pageY + 10 + "px");
+      })
+      .on("mousemove", (event) => {
+        tooltip
+          .style("left", event.pageX + 10 + "px")
+          .style("top", event.pageY + 10 + "px");
+      })
+      .on("mouseleave", () => {
+        tooltip.style("opacity", 0);
+      })
+      .on("click", function (event, d) {
+        // console.log(`Clicked on ${d}`);
+        showDetail(d);
+      });
+
+    // and to add the text labels
+    svg
+      .selectAll("text")
+      .data(root.leaves())
+      .join("text")
+      .attr("x", function (d) {
+        return d.x0 + 10;
+      }) // +10 to adjust position (more right)
+      .attr("y", function (d) {
+        return d.y0 + 20;
+      }) // +20 to adjust position (lower)
+      .text(function (d) {
+        return d.data.name;
+      })
+      .attr("font-size", "15px")
+      .attr("fill", "#A5D7E8");
+  }
+
+  function treemapS(data, tag) {
+    data.unshift({
+      name: "Origin",
+      parent: "",
+      size: "",
+      value: "",
+    });
+    data["columns"] = ["name", "parent", "size", "value"];
+
+    // set the dimensions and margins of the graph
+    var margin = { top: 10, right: 10, bottom: 10, left: 10 },
+      width = 270 - margin.left - margin.right,
+      height = 220 - margin.top - margin.bottom;
+
+    // append the svg object to the body of the page
+    const svg = d3
+      .select(tag)
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+    // stratify the data: reformatting for d3.js
+    const root = d3
+      .stratify()
+      .id(function (d) {
+        return d.name;
+      })
+      .parentId(function (d) {
+        return d.parent;
+      })(data);
+
+    root.sum(function (d) {
+      return +d.size;
+    });
+
+    // Then d3.treemap computes the position of each element of the hierarchy
+    // The coordinates are added to the root object above
+    d3.treemap().size([width, height]).padding(4)(root);
+
+    // Define the minimum and maximum values for opacity calculation
+    const minValue = d3.min(root.leaves(), (d) => +d.data.value);
+    const maxValue = d3.max(root.leaves(), (d) => +d.data.value);
+
+    const opacityScale = d3
+      .scaleLinear()
+      .domain([minValue, maxValue])
+      .range([0.5, 1]);
+
     svg
       .selectAll("rect")
       .data(root.leaves())
       .join("rect")
-      .attr("x", function (d) {
-        return d.x0;
-      })
-      .attr("y", function (d) {
-        return d.y0;
-      })
-      .attr("width", function (d) {
-        return d.x1 - d.x0;
-      })
-      .attr("height", function (d) {
-        return d.y1 - d.y0;
-      })
-      .style("stroke", "#0b2447")
-      .style("fill", "#576cbc");
+      .attr("x", (d) => d.x0)
+      .attr("y", (d) => d.y0)
+      .attr("width", (d) => d.x1 - d.x0)
+      .attr("height", (d) => d.y1 - d.y0)
+      .style("fill", "#576cbc")
+      .style("opacity", (d) => opacityScale(d.data.value));
+  }
 
-    // and to add the text labels
-    // svg
-    //   .selectAll("text")
-    //   .data(root.leaves())
-    //   .join("text")
-    //   .attr("x", function (d) {
-    //     return d.x0 + 10;
-    //   }) // +10 to adjust position (more right)
-    //   .attr("y", function (d) {
-    //     return d.y0 + 20;
-    //   }) // +20 to adjust position (lower)
-    //   .text(function (d) {
-    //     return d.data.name;
-    //   })
-    //   .attr("font-size", "15px")
-    //   .attr("fill", "white");
-    }
+  function treemapSmall(data, tag) {
+    data.unshift({
+      name: "Origin",
+      parent: "",
+      size: "",
+      value: "",
+    });
+    data["columns"] = ["name", "parent", "size", "value"];
+
+    // set the dimensions and margins of the graph
+    var margin = { top: 10, right: 10, bottom: 10, left: 10 },
+      width = 270 - margin.left - margin.right,
+      height = 220 - margin.top - margin.bottom;
+
+    // append the svg object to the body of the page
+    const svg = d3
+      .select(tag)
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+    // stratify the data: reformatting for d3.js
+    const root = d3
+      .stratify()
+      .id(function (d) {
+        return d.name;
+      })
+      .parentId(function (d) {
+        return d.parent;
+      })(data);
+
+    root.sum(function (d) {
+      return +d.size;
+    });
+
+    // Then d3.treemap computes the position of each element of the hierarchy
+    // The coordinates are added to the root object above
+    d3.treemap().size([width, height]).padding(4)(root);
+
+    // Define the minimum and maximum values for opacity calculation
+    const minValue = d3.min(root.leaves(), (d) => +d.data.value);
+    const maxValue = d3.max(root.leaves(), (d) => +d.data.value);
+
+    const opacityScale = d3
+      .scaleLinear()
+      .domain([minValue, maxValue])
+      .range([0.5, 1]);
+
+    svg
+      .selectAll("rect")
+      .data(root.leaves())
+      .join("rect")
+      .attr("x", (d) => d.x0)
+      .attr("y", (d) => d.y0)
+      .attr("width", (d) => d.x1 - d.x0)
+      .attr("height", (d) => d.y1 - d.y0)
+      .style("fill", "#576cbc")
+      .style("opacity", (d) => opacityScale(d.data.value));
+  }
 
   function treemapSmallD(ddata, tag) {
     // Define chart dimensions and margins
@@ -1347,8 +1489,8 @@
     smallchartHtmlUrl: "snippets/small-chart-snippet.html",
     overviewHtmlUrl: "snippets/overview-snippet.html",
     // baseUrl: "http://54.236.33.205:8000/"
-    // baseUrl: "http://localhost:8000/",
-    baseUrl: "https://api.bitcoinpublico.com/",
+    baseUrl: "http://localhost:8000/",
+    // baseUrl: "https://api.bitcoinpublico.com/",
   };
 
   const homeCards = {
