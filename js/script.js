@@ -7,7 +7,6 @@
     headerHTML();
     mainHtml();
     footerHTML();
-
   });
 
   dc.loadDashboard = function (cardId) {
@@ -118,10 +117,8 @@
     switch (card.id) {
       case "A":
         $ajaxUtils.sendGetRequest(
-          urls.baseUrl + "get_fee_size_block",
+          urls.baseUrl + card.url,
           function (data) {
-            console.log('get_fee_size_block')
-            console.log(data)
             treemapSmall(data, "#" + card.chart);
           },
           true
@@ -129,7 +126,7 @@
         break;
       case "B":
         $ajaxUtils.sendGetRequest(
-          urls.baseUrl + "get_volume_mini",
+          urls.baseUrl + card.url,
           function (data) {
             areaGraphSmall(data, "#" + card.chart);
           },
@@ -140,14 +137,14 @@
         $ajaxUtils.sendGetRequest(
           urls.baseUrl + card.url,
           function (data) {
-            barChartSmall(data, "#" + card.chart); // Call barChart() function with received data
+            barChartSmall(data, "#" + card.chart);
           },
           true
         );
         break;
       case "D":
         $ajaxUtils.sendGetRequest(
-          urls.baseUrl + "get_fee_size_block",
+          urls.baseUrl + card.url,
           function (data) {
             treemapSmallD(data, "#" + card.chart);
           },
@@ -664,7 +661,17 @@
   }
 
   function treemapSmall(data, tag) {
-    // Define chart dimensions and margins
+    // console.log("treemapSmall");
+    // console.log(data);
+    data.unshift({
+      name: "Origin",
+      parent: "",
+      value: "",
+    });
+    data['columns'] = ['name', 'parent', 'value']
+    // console.log(data);
+
+    // set the dimensions and margins of the graph
     var margin = { top: 10, right: 10, bottom: 10, left: 10 },
       width = 280 - margin.left - margin.right,
       height = 220 - margin.top - margin.bottom;
@@ -678,64 +685,70 @@
       .append("g")
       .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-    // read json data
-      console.log(data);
-      // Give the data to this cluster layout:
-      const root = d3.hierarchy(data).sum(function (d) {
-        return d.value;
-      }); // Here the size of each leave is given in the 'value' field in input data
+      // d3.csv(
+      //   "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_hierarchy_1level.csv"
+      // ).then(function (data) {
+      //   console.log("original");
+      //   console.log(data);
+      // })
+  
+    // stratify the data: reformatting for d3.js
+    const root = d3
+      .stratify()
+      .id(function (d) {
+        return d.name;
+      }) // Name of the entity (column name is name in csv)
+      .parentId(function (d) {
+        return d.parent;
+      })(
+      // Name of the parent (column name is parent in csv)
+      data
+    );
+    root.sum(function (d) {
+      return +d.value;
+    }); // Compute the numeric value for each entity
 
-      // Then d3.treemap computes the position of each element of the hierarchy
-      d3
-        .treemap()
-        .size([width, height])
-        .paddingTop(0)
-        .paddingRight(7)
-        .paddingInner(3)(
-        // Padding between each rectangle
-        //.paddingOuter(6)
-        //.padding(20)
-        root
-      );
+    // Then d3.treemap computes the position of each element of the hierarchy
+    // The coordinates are added to the root object above
+    d3.treemap().size([width, height]).padding(4)(root);
 
-      // prepare a color scale
-      const color = d3
-        .scaleOrdinal()
-        .domain(["boss1", "boss2", "boss3"])
-        .range(["#df88b7", "#ffc000", "#9bca53"]);
+    // use this information to add rectangles:
+    svg
+      .selectAll("rect")
+      .data(root.leaves())
+      .join("rect")
+      .attr("x", function (d) {
+        return d.x0;
+      })
+      .attr("y", function (d) {
+        return d.y0;
+      })
+      .attr("width", function (d) {
+        return d.x1 - d.x0;
+      })
+      .attr("height", function (d) {
+        return d.y1 - d.y0;
+      })
+      .style("stroke", "#0b2447")
+      .style("fill", "#576cbc");
 
-      // And a opacity scale
-      const opacity = d3.scaleLinear().domain([10, 30]).range([0.5, 1]);
-
-      // use this information to add rectangles:
-      svg
-        .selectAll("rect")
-        .data(root.leaves())
-        .join("rect")
-        .attr("x", function (d) {
-          return d.x0;
-        })
-        .attr("y", function (d) {
-          return d.y0;
-        })
-        .attr("width", function (d) {
-          return d.x1 - d.x0;
-        })
-        .attr("height", function (d) {
-          return d.y1 - d.y0;
-        })
-        .style("stroke", "#576CBC")
-        .style("stroke-width", "1px")
-        .style("fill", function (d) {
-          return color(d.parent.data.name);
-        })
-        .style("opacity", function (d) {
-          return opacity(d.data.value);
-        })
-        .on("click", function (event, d) {
-          showDetail(d);
-        });
-  }
+    // and to add the text labels
+    // svg
+    //   .selectAll("text")
+    //   .data(root.leaves())
+    //   .join("text")
+    //   .attr("x", function (d) {
+    //     return d.x0 + 10;
+    //   }) // +10 to adjust position (more right)
+    //   .attr("y", function (d) {
+    //     return d.y0 + 20;
+    //   }) // +20 to adjust position (lower)
+    //   .text(function (d) {
+    //     return d.data.name;
+    //   })
+    //   .attr("font-size", "15px")
+    //   .attr("fill", "white");
+    }
 
   function treemapSmallD(ddata, tag) {
     // Define chart dimensions and margins
@@ -756,7 +769,7 @@
     d3.json(
       "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_dendrogram_full.json"
     ).then(function (data) {
-      // console.log(data);
+      console.log(data);
       // Give the data to this cluster layout:
       const root = d3.hierarchy(data).sum(function (d) {
         return d.value;
@@ -1334,7 +1347,7 @@
     smallchartHtmlUrl: "snippets/small-chart-snippet.html",
     overviewHtmlUrl: "snippets/overview-snippet.html",
     // baseUrl: "http://54.236.33.205:8000/"
-    // baseUrl: "http://localhost:8000/"
+    // baseUrl: "http://localhost:8000/",
     baseUrl: "https://api.bitcoinpublico.com/",
   };
 
@@ -1350,21 +1363,21 @@
       id: "B",
       tag: "#cardB-content",
       txt: "Volume transacted",
-      url: "get_blockchain_mini",
+      url: "get_vol_block",
       chart: "chart-mini-B",
     },
     cardC: {
       id: "C",
       tag: "#cardC-content",
-      txt: "Some bar chart",
+      txt: "bar chart",
       url: "get_blockchain_mini",
       chart: "chart-mini-C",
     },
     cardD: {
       id: "D",
       tag: "#cardD-content",
-      txt: "chartD txt",
-      url: "get_blockchain_mini",
+      txt: "get fee size block",
+      url: "get_fee_size_block",
       chart: "chart-mini-D",
     },
     cardE: {
