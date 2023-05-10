@@ -119,6 +119,7 @@
         $ajaxUtils.sendGetRequest(
           urls.baseUrl + card.url,
           function (data) {
+            cart['get_blockchain_mini'] = data
             treemapSmall(data, "#" + card.chart);
           },
           true
@@ -306,59 +307,62 @@
 
   // END COMPONENTS
 
-  function txsmapHTML() {
+  // CHART INTERACTIVITY
+  function showDetail(d) {
+
+    showLoading("#dash-content");
+
     $ajaxUtils.sendGetRequest(
       urls.txsmapHtmlUrl,
       function (snippetHtml) {
         insertHtml("#dash-content", snippetHtml);
+
+        $ajaxUtils.sendGetRequest(
+          urls.chartHtmlUrl,
+          function (snippetHtml) {
+            insertHtml("#txs-content", snippetHtml);
+          },
+          false
+        );
+
+        $ajaxUtils.sendGetRequest(
+          urls.smallchartHtmlUrl,
+          function (snippetHtml) {
+            insertHtml("#block-content", snippetHtml);
+          },
+          false
+        );
+
+        // treemapSmall(cart.get_blockchain_mini, "#small-chart-container");
+
+        $ajaxUtils.sendGetRequest(
+          urls.baseUrl + "get_blockchain_mini",
+          function (data) {
+            treemapSmall(data, "#small-chart-container");
+          },
+          true
+        );
+        
+        console.log(d)
+        console.log(d.height)
+        $ajaxUtils.sendGetRequest(
+          urls.baseUrl + "get_txs_mini/?height=" + 3000,
+          // urls.baseUrl + "get_txs_mini?height=" + d.height,
+          function (data) {
+            console.log(data);
+            treemapLargeTxs(data, "#chart-container");
+          },
+          true
+        );
+
       },
       false
-    );
-  }
-
-  // CHART INTERACTIVITY
-  function showDetail(d) {
-    showLoading("#dash-content");
-
-    txsmapHTML();
-
-    $ajaxUtils.sendGetRequest(
-      urls.chartHtmlUrl,
-      function (snippetHtml) {
-        insertHtml("#txs-content", snippetHtml);
-      },
-      false
-    );
-
-    $ajaxUtils.sendGetRequest(
-      urls.smallchartHtmlUrl,
-      function (snippetHtml) {
-        insertHtml("#block-content", snippetHtml);
-      },
-      false
-    );
-
-    $ajaxUtils.sendGetRequest(
-      urls.baseUrl + "get_blockchain_mini",
-      function (data) {
-        treemapSmall(data, "#small-chart-container");
-      },
-      true
-    );
-
-    $ajaxUtils.sendGetRequest(
-      urls.baseUrl + "get_blockchain_mini",
-      function (data) {
-        treemapLarge(data, "#chart-container");
-      },
-      true
     );
 
     chartInfoHTML();
   }
 
   // CHARTS
-  //
   // area graph: "https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/5_OneCatSevNumOrdered_wide.csv"
   // treemap: "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_dendrogram_full.json"
   // bar chart: "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_stacked.csv"
@@ -489,176 +493,277 @@
       });
   }
 
-  // function treemapLargeB(data, tag) {
-  //   // Define chart dimensions and margins
-  //   var margin = { top: 10, right: 10, bottom: 10, left: 25 },
-  //     width = 600 - margin.left - margin.right,
-  //     // d3.select(".chart-content").node().offsetWidth - margin.left - margin.right,
-  //     // width = 750 - margin.left - margin.right,
-  //     height = 600 - margin.top - margin.bottom;
+  function treemapLargeGroups(data, tag) {
+    // Define chart dimensions and margins
+    var margin = { top: 10, right: 10, bottom: 10, left: 25 },
+      width = 600 - margin.left - margin.right,
+      // d3.select(".chart-content").node().offsetWidth - margin.left - margin.right,
+      // width = 750 - margin.left - margin.right,
+      height = 600 - margin.top - margin.bottom;
 
-  //   // append the svg object to the body of the page
-  //   const svg = d3
-  //     .select(tag)
-  //     .append("svg")
-  //     .attr("width", width + margin.left + margin.right)
-  //     .attr("height", height + margin.top + margin.bottom)
-  //     .append("g")
-  //     .attr("transform", `translate(${margin.left}, ${margin.top})`);
+    // append the svg object to the body of the page
+    const svg = d3
+      .select(tag)
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-  //   // read json data
-  //   // Give the data to this cluster layout:
-  //   const root = d3.hierarchy(data).sum(function (d) {
-  //     return d.value;
-  //   }); // Here the size of each leave is given in the 'value' field in input data
+    // read json data
+    // Give the data to this cluster layout:
+    const root = d3.hierarchy(data).sum(function (d) {
+      return d.value;
+    }); // Here the size of each leave is given in the 'value' field in input data
 
-  //   // Then d3.treemap computes the position of each element of the hierarchy
-  //   d3
-  //     .treemap()
-  //     .size([width, height])
-  //     .paddingTop(0)
-  //     .paddingRight(7)
-  //     .paddingInner(3)(
-  //     // Padding between each rectangle
-  //     //.paddingOuter(6)
-  //     //.padding(20)
-  //     root
-  //   );
+    // Then d3.treemap computes the position of each element of the hierarchy
+    d3
+      .treemap()
+      .size([width, height])
+      .paddingTop(0)
+      .paddingRight(7)
+      .paddingInner(3)(
+      // Padding between each rectangle
+      //.paddingOuter(6)
+      //.padding(20)
+      root
+    );
 
-  //   // prepare a color scale
-  //   const color = d3
-  //     .scaleOrdinal()
-  //     .domain(["boss1", "boss2", "boss3"])
-  //     .range(["#df88b7", "#ffc000", "#9bca53"]);
+    // prepare a color scale
+    const color = d3
+      .scaleOrdinal()
+      .domain(["boss1", "boss2", "boss3"])
+      .range(["#df88b7", "#ffc000", "#9bca53"]);
 
-  //   // And a opacity scale
-  //   const opacity = d3.scaleLinear().domain([10, 30]).range([0.5, 1]);
+    // And a opacity scale
+    const opacity = d3.scaleLinear().domain([10, 30]).range([0.5, 1]);
 
-  //   // create a tooltip
-  //   var Tooltip = d3
-  //     .select(tag)
-  //     .append("div")
-  //     .style("opacity", 0)
-  //     .attr("class", "tooltip")
-  //     .style("background-color", "white")
-  //     .style("border", "solid")
-  //     .style("border-width", "2px")
-  //     .style("border-radius", "5px")
-  //     .style("padding", "5px");
+    // create a tooltip
+    var Tooltip = d3
+      .select(tag)
+      .append("div")
+      .style("opacity", 0)
+      .attr("class", "tooltip")
+      .style("background-color", "white")
+      .style("border", "solid")
+      .style("border-width", "2px")
+      .style("border-radius", "5px")
+      .style("padding", "5px");
 
-  //   // Three function that change the tooltip when user hover / move / leave a cell
-  //   var mouseover = function (d) {
-  //     Tooltip.style("opacity", 1);
-  //     d3.select(this).style("stroke", "black").style("opacity", 1);
-  //   };
-  //   var mousemove = function (d) {
-  //     Tooltip.html("The exact value of<br>this cell is: " + d.value)
-  //       .style("left", d3.mouse(this)[0] + 70 + "px")
-  //       .style("top", d3.mouse(this)[1] + "px");
-  //   };
-  //   var mouseleave = function (d) {
-  //     Tooltip.style("opacity", 0);
-  //     d3.select(this).style("stroke", "none").style("opacity", 0.8);
-  //   };
+    // Three function that change the tooltip when user hover / move / leave a cell
+    var mouseover = function (d) {
+      Tooltip.style("opacity", 1);
+      d3.select(this).style("stroke", "black").style("opacity", 1);
+    };
+    var mousemove = function (d) {
+      Tooltip.html("The exact value of<br>this cell is: " + d.value)
+        .style("left", d3.mouse(this)[0] + 70 + "px")
+        .style("top", d3.mouse(this)[1] + "px");
+    };
+    var mouseleave = function (d) {
+      Tooltip.style("opacity", 0);
+      d3.select(this).style("stroke", "none").style("opacity", 0.8);
+    };
 
-  //   // use this information to add rectangles:
-  //   svg
-  //     .selectAll("rect")
-  //     .data(root.leaves())
-  //     .join("rect")
-  //     .attr("x", function (d) {
-  //       return d.x0;
-  //     })
-  //     .attr("y", function (d) {
-  //       return d.y0;
-  //     })
-  //     .attr("width", function (d) {
-  //       return d.x1 - d.x0;
-  //     })
-  //     .attr("height", function (d) {
-  //       return d.y1 - d.y0;
-  //     })
-  //     .style("stroke", "black")
-  //     .style("fill", function (d) {
-  //       return color(d.parent.data.name);
-  //     })
-  //     .style("opacity", function (d) {
-  //       return opacity(d.data.value);
-  //     })
-  //     .on("click", function (event, d) {
-  //       // console.log(`Clicked on ${d}`);
-  //       showDetail(d);
-  //     });
+    // use this information to add rectangles:
+    svg
+      .selectAll("rect")
+      .data(root.leaves())
+      .join("rect")
+      .attr("x", function (d) {
+        return d.x0;
+      })
+      .attr("y", function (d) {
+        return d.y0;
+      })
+      .attr("width", function (d) {
+        return d.x1 - d.x0;
+      })
+      .attr("height", function (d) {
+        return d.y1 - d.y0;
+      })
+      .style("stroke", "black")
+      .style("fill", function (d) {
+        return color(d.parent.data.name);
+      })
+      .style("opacity", function (d) {
+        return opacity(d.data.value);
+      });
 
-  //   // and to add the text labels
-  //   svg
-  //     .selectAll("text")
-  //     .data(root.leaves())
-  //     .enter()
-  //     .append("text")
-  //     .attr("x", function (d) {
-  //       return d.x0 + 5;
-  //     }) // +10 to adjust position (more right)
-  //     .attr("y", function (d) {
-  //       return d.y0 + 20;
-  //     }) // +20 to adjust position (lower)
-  //     .text(function (d) {
-  //       return d.data.name.replace("mister_", "");
-  //     })
-  //     .attr("font-size", "19px")
-  //     .attr("fill", "white");
+    // and to add the text labels
+    svg
+      .selectAll("text")
+      .data(root.leaves())
+      .enter()
+      .append("text")
+      .attr("x", function (d) {
+        return d.x0 + 5;
+      }) // +10 to adjust position (more right)
+      .attr("y", function (d) {
+        return d.y0 + 20;
+      }) // +20 to adjust position (lower)
+      .text(function (d) {
+        return d.data.name.replace("mister_", "");
+      })
+      .attr("font-size", "19px")
+      .attr("fill", "white");
 
-  //   // and to add the text labels
-  //   svg
-  //     .selectAll("vals")
-  //     .data(root.leaves())
-  //     .enter()
-  //     .append("text")
-  //     .attr("x", function (d) {
-  //       return d.x0 + 5;
-  //     }) // +10 to adjust position (more right)
-  //     .attr("y", function (d) {
-  //       return d.y0 + 35;
-  //     }) // +20 to adjust position (lower)
-  //     .text(function (d) {
-  //       return d.data.value;
-  //     })
-  //     .attr("font-size", "11px")
-  //     .attr("fill", "white");
+    // and to add the text labels
+    svg
+      .selectAll("vals")
+      .data(root.leaves())
+      .enter()
+      .append("text")
+      .attr("x", function (d) {
+        return d.x0 + 5;
+      }) // +10 to adjust position (more right)
+      .attr("y", function (d) {
+        return d.y0 + 35;
+      }) // +20 to adjust position (lower)
+      .text(function (d) {
+        return d.data.value;
+      })
+      .attr("font-size", "11px")
+      .attr("fill", "white");
 
-  //   // Add title for the 3 groups
-  //   // svg
-  //   //   .selectAll("titles")
-  //   //   .data(
-  //   //     root.descendants().filter(function (d) {
-  //   //       return d.depth == 1;
-  //   //     })
-  //   //   )
-  //   //   .enter()
-  //   //   .append("text")
-  //   //   .attr("x", function (d) {
-  //   //     return d.x0;
-  //   //   })
-  //   //   .attr("y", function (d) {
-  //   //     return d.y0 + 210;
-  //   //   })
-  //   //   .text(function (d) {
-  //   //     return d.data.name;
-  //   //   })
-  //   //   .attr("font-size", "19px")
-  //   //   .attr("fill", function (d) {
-  //   //     return color(d.data.name);
-  //   //   });
+    // Add title for the 3 groups
+    svg
+      .selectAll("titles")
+      .data(
+        root.descendants().filter(function (d) {
+          return d.depth == 1;
+        })
+      )
+      .enter()
+      .append("text")
+      .attr("x", function (d) {
+        return d.x0;
+      })
+      .attr("y", function (d) {
+        return d.y0 + 210;
+      })
+      .text(function (d) {
+        return d.data.name;
+      })
+      .attr("font-size", "19px")
+      .attr("fill", function (d) {
+        return color(d.data.name);
+      });
 
-  //   // Add title for the 3 groups
-  //   svg
-  //     .append("text")
-  //     .attr("x", 0)
-  //     // .attr("y", 14) // +20 to adjust position (lower)
-  //     // .text("Three group leaders and 14 employees")
-  //     .attr("font-size", "19px")
-  //     .attr("fill", "grey");
-  // }
+    // Add title for the 3 groups
+    svg
+      .append("text")
+      .attr("x", 0)
+      // .attr("y", 14) // +20 to adjust position (lower)
+      // .text("Three group leaders and 14 employees")
+      .attr("font-size", "19px")
+      .attr("fill", "grey");
+  }
+
+  function treemapLargeTxs(data, tag) {
+    //   "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_hierarchy_1level.csv"
+    data.unshift({
+      name: "Origin",
+      parent: "",
+      size: "",
+      value: "",
+    });
+    data["columns"] = ["name", "parent", "size", "value"];
+
+    // set the dimensions and margins of the graph
+    var margin = { top: 10, right: 10, bottom: 10, left: 10 },
+      width = 600 - margin.left - margin.right,
+      height = 600 - margin.top - margin.bottom;
+
+    const tooltip = d3
+      .select(tag)
+      .append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0)
+      .style("background-color", "#f1f1f1") // Change the background color here
+      .style("border", "solid")
+      .style("border-color", "#0b2447") // Change the border color here
+      .style("border-width", "1px")
+      .style("border-radius", "5px")
+      .style("padding", "5px");
+
+    // append the svg object to the body of the page
+    const svg = d3
+      .select(tag)
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+    // stratify the data: reformatting for d3.js
+    const root = d3
+      .stratify()
+      .id(function (d) {
+        return d.name;
+      }) // Name of the entity (column name is name in csv)
+      .parentId(function (d) {
+        return d.parent;
+      })(
+      // Name of the parent (column name is parent in csv)
+      data
+    );
+    root.sum(function (d) {
+      return +d.size;
+    }); // Compute the numeric value for each entity
+
+    // Then d3.treemap computes the position of each element of the hierarchy
+    // The coordinates are added to the root object above
+    d3.treemap().size([width, height]).padding(4)(root);
+
+    // Define the minimum and maximum values for opacity calculation
+    const minValue = d3.min(root.leaves(), (d) => +d.data.value);
+    const maxValue = d3.max(root.leaves(), (d) => +d.data.value);
+
+    const opacityScale = d3
+      .scaleLinear()
+      .domain([minValue, maxValue])
+      .range([0.5, 1]);
+
+    svg
+      .selectAll("rect")
+      .data(root.leaves())
+      .join("rect")
+      .attr("x", (d) => d.x0)
+      .attr("y", (d) => d.y0)
+      .attr("width", (d) => d.x1 - d.x0)
+      .attr("height", (d) => d.y1 - d.y0)
+      .style("stroke", "#0b2447")
+      .style("stroke-width", "1px")
+      .style("fill", "#576cbc")
+      .style("opacity", (d) => opacityScale(d.data.value))
+      .on("mouseover", (event, d) => {
+        tooltip
+          .style("opacity", 1)
+          .html(
+            "Tx: " +
+              d.data.name +
+              "<br/>Fee: " +
+              d.data.value +
+              " sats<br/>Size: " +
+              d.data.size +
+              " bytes"
+          )
+          .style("left", event.pageX - 90 + "px")
+          .style("top", event.pageY - 90 + "px");
+      })
+      .on("mousemove", (event) => {
+        tooltip
+          .style("left", event.pageX - 90 + "px")
+          .style("top", event.pageY - 90 + "px");
+      })
+      .on("mouseleave", () => {
+        tooltip.style("opacity", 0);
+      })
+      .on("click", function (event, d) {
+        showDetail(d);
+      });
+  }
 
   function treemapLarge(data, tag) {
     //   "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_hierarchy_1level.csv"
@@ -739,13 +844,19 @@
       .style("opacity", (d) => opacityScale(d.data.value))
       .on("mouseover", (event, d) => {
         tooltip
-        .style("opacity", 1)
-        .html("Block:" + d.data.name + "<br/>Fee: " + d.data.value + "<br/>Size: " + d.data.size)
-        .style("left", event.pageX - 90 + "px")
-        .style("top", event.pageY - 90 + "px");
-        // .style("left", event.pageX + 0 + "px")
-        // .style("top", event.pageY - 0 + "px");
-            })
+          .style("opacity", 1)
+          .html(
+            "Block: " +
+              d.data.name +
+              "<br/>Fee: " +
+              d.data.value +
+              " sats<br/>Size: " +
+              d.data.size +
+              " bytes"
+          )
+          .style("left", event.pageX - 90 + "px")
+          .style("top", event.pageY - 90 + "px");
+      })
       .on("mousemove", (event) => {
         tooltip
           .style("left", event.pageX - 90 + "px")
@@ -755,7 +866,6 @@
         tooltip.style("opacity", 0);
       })
       .on("click", function (event, d) {
-        // console.log(`Clicked on ${d}`);
         showDetail(d);
       });
 
@@ -898,7 +1008,10 @@
       .attr("width", (d) => d.x1 - d.x0)
       .attr("height", (d) => d.y1 - d.y0)
       .style("fill", "#576cbc")
-      .style("opacity", (d) => opacityScale(d.data.value));
+      .style("opacity", (d) => opacityScale(d.data.value))
+      .on("click", function (event, d) {
+        showDetail(d);
+      });
   }
 
   function treemapSmallD(ddata, tag) {
@@ -920,7 +1033,6 @@
     d3.json(
       "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_dendrogram_full.json"
     ).then(function (data) {
-      console.log(data);
       // Give the data to this cluster layout:
       const root = d3.hierarchy(data).sum(function (d) {
         return d.value;
@@ -972,9 +1084,6 @@
         })
         .style("opacity", function (d) {
           return opacity(d.data.value);
-        })
-        .on("click", function (event, d) {
-          showDetail(d);
         });
     });
   }
@@ -1479,6 +1588,9 @@
   }
 
   // CONSTANTS TODO DB
+  cart = {
+  }
+
 
   urls = {
     cardHtmlUrl: "snippets/card-snippet.html",
