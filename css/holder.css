@@ -1,0 +1,36 @@
+
+
+ .chart-mini {
+    /* width: 200px; */
+    height: 230px;
+  }
+  /* .card-body {
+    height: 100%;
+  }
+  .card-container {
+    height: 100%;
+  } */
+  
+  /* CARDS */
+  .card {
+    box-shadow: 0px 0px 7px 0px #0B2447,
+      inset 0px 0px 5px 0px #A5D7E8;
+    margin-bottom: 20px;
+    width: 100%;
+    /* min-height: 220px;   */
+  }
+  
+  .card-body {
+    padding: 7px;
+  }
+  
+  
+  
+  
+  
+
+  .snap {
+    background-color: #a5d7e8;
+  }
+  
+  

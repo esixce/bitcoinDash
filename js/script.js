@@ -15,8 +15,13 @@
   };
 
   dc.loadAbout = function () {
-    showLoading("#about-content");
+    showLoading("#main-content");
     aboutHTML();
+  };
+
+  dc.loadSnap = function () {
+    showLoading("#main-content");
+    snapHTML();
   };
 
   // HOME COMPONENT
@@ -27,6 +32,7 @@
         insertHtml("#main-content", snippetHtml);
 
         sidebarHTML();
+        // menuHTML();
         homeHTML();
         overviewHTML();
       },
@@ -172,6 +178,16 @@
     );
   }
 
+  function menuHTML() {
+    $ajaxUtils.sendGetRequest(
+      urls.menuHtmlUrl,
+      function (snippetHtml) {
+        insertHtml("#menu-content", snippetHtml);
+      },
+      false
+    );
+  }
+
   // DASH COMPONENT
   function someHtml(cardId) {
     $ajaxUtils.sendGetRequest(
@@ -294,12 +310,21 @@
     );
   }
 
-  // ABOUT COMPONENT
+  // OTHER COMPONENTS
   function aboutHTML() {
     $ajaxUtils.sendGetRequest(
       urls.aboutHtmlUrl,
       function (snippetHtml) {
-        insertHtml("#about-content", snippetHtml);
+        insertHtml("#main-content", snippetHtml);
+      },
+      false
+    );
+  }
+  function snapHTML() {
+    $ajaxUtils.sendGetRequest(
+      urls.snapHtmlUrl,
+      function (snippetHtml) {
+        insertHtml("#main-content", snippetHtml);
       },
       false
     );
@@ -1574,19 +1599,6 @@
       });
   }
 
-  function menuHTML() {
-    $ajaxUtils.sendGetRequest(
-      urls.menuHtmlUrl,
-      function (snippetHtml) {
-        insertHtml("#menu-content", snippetHtml);
-      },
-      false
-    );
-
-    sidebarHTML();
-    homeHTML();
-  }
-
   // CONSTANTS TODO DB
   cart = {
   }
@@ -1604,14 +1616,15 @@
     menuHtmlUrl: "snippets/menu-snippet.html",
     sidebarHtmlUrl: "snippets/sidebar-snippet.html",
     sideconHtmlUrl: "snippets/sidecon-snippet.html",
+    snapHtmlUrl: "snippets/snap-snippet.html",
     aboutHtmlUrl: "snippets/about-snippet.html",
     someHtmlUrl: "snippets/some-snippet.html",
     txsmapHtmlUrl: "snippets/txsmap-snippet.html",
     smallchartHtmlUrl: "snippets/small-chart-snippet.html",
     overviewHtmlUrl: "snippets/overview-snippet.html",
     // baseUrl: "http://54.236.33.205:8000/"
-    // baseUrl: "http://localhost:8000/",
-    baseUrl: "https://api.bitcoinpublico.com/",
+    baseUrl: "http://localhost:8000/",
+    // baseUrl: "https://api.bitcoinpublico.com/",
   };
 
   const homeCards = {

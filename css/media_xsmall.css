@@ -1,0 +1,29 @@
+/********** Extra small devices only **********/
+@media (max-width: 767px) {
+  /* Header */
+  .navbar-brand {
+    padding-top: 5px;
+    height: 30px;
+  }
+  .navbar-brand h1 {
+    /* Restaurant name */
+    padding-top: 10px;
+    font-size: 4vw; /* 1vw = 1% of viewport width */
+  }
+
+  #collapsable-nav a {
+    /* Collapsed nav menu text */
+    font-size: 1.2em;
+  }
+  #collapsable-nav a span {
+    /* Collapsed nav menu glyph */
+    font-size: 2em;
+    margin-right: 5px;
+  }
+
+  .sidebar {
+    display: none; /* Hide the sidebar on small devices */
+  }
+}
+
+  /* End Header */

@@ -1,0 +1,13 @@
+/* sidebar.css */
+
+#sidebar-content {
+  /* max-width: 120px; */
+  font-size: 16px;
+  background-color: #a5d7e8;
+  font-family: "Roboto", sans-serif;
+  padding: 25px 10px 10px 10px;
+  height: calc(
+    100vh - 100px
+  ); /* 100px is the combined height of the header and footer */
+  min-width: 200 px;
+}

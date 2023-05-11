@@ -1,0 +1,31 @@
+/* main-content.css */
+
+.main-container {
+  margin: 0;
+}
+
+#mid-content {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+
+.menu-item {
+  border-bottom: 1px solid #E9F5FA;
+  padding: 10px;
+}
+
+.menu-item:hover {
+  background-color: #E9F5FA;
+  cursor: pointer;
+}
+
+
+#main-content {
+  /* width: 100%; */
+  float: left;
+}
+#clear-content {
+  clear: both;
+}
+  

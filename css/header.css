@@ -1,0 +1,60 @@
+/* header.css */
+
+#logo-img {
+  background: url("../images/logo-img.png") no-repeat;
+  width: 50px;
+  height: 50px;
+  margin: 0px 0px 0px 0;
+}
+
+/* .navbar-header button {
+    padding-right: 30px;
+  } */
+.navbar-header button.navbar-toggle,
+.navbar-header .icon-bar {
+  border: 1px solid #0b2447;
+}
+
+.navbar-header button.navbar-toggle {
+  clear: both;
+  margin-top: -22px;
+}
+/* END HEADER */
+
+/* Restaurant name */
+#header-nav {
+  background-color: #576cbc;
+  border-radius: 0;
+  border: 0;
+}
+
+.navbar-brand h1 {
+  font-family: "Raleway", sans-serif;
+  color: #f7f7f7;
+  font-size: 1.3em;
+  font-weight: bold;
+  text-shadow: 1px 1px 1px #0b2447;
+  margin-top: 0;
+  margin-bottom: -5 px;
+  line-height: 0.75;
+}
+
+.navbar-brand a:hover,
+.navbar-brand a:focus {
+  text-decoration: none;
+}
+
+#nav-list a {
+  color: #a5d7e8;
+  text-align: center;
+  font-size: 0.8em;
+  padding: 5px;
+}
+
+#nav-list a:hover {
+  background: #0b2447;
+}
+
+#nav-list a span {
+  font-size: 2em ;
+}

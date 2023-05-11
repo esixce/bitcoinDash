@@ -1,0 +1,44 @@
+/* sidecon.css */
+
+.sidecon-content {
+  /* max-width: 120px; */
+  font-size: 26px;
+  background-color: #a5d7e8;
+  font-family: "Roboto", sans-serif;
+  padding: 25px 0px 0px 0px;
+  height: calc(
+    100vh - 100px
+  ); /* 100px is the combined height of the header and footer */
+  width: 50px; /* Fixed width of sidebar */
+  text-align: center;
+}
+
+.sidecon {
+  padding: 0px 0px 10px 00px;
+}
+
+/* #0B2447, #19376D, #576CBC, #A5D7E8, #E9F5FA */
+
+.sidecon a:hover,
+.sidecon a:focus {
+  text-decoration: none;
+  background: #576cbc;
+}
+
+.sidecon a {
+  text-decoration: none;
+  color: #0b2447;
+  font-size: 0.8em;
+  padding: 5px;
+}
+
+.sidecon glyphicon {
+  border: 2px solid #19376d;
+  border-radius: 10px;
+  padding: 5px;
+  display: inline-block;
+}
+.wrapper {
+  display: grid;
+  grid-template-columns: 40px 1fr; /* Sidebar width is 200px, and the main content fills the remaining space */
+}
