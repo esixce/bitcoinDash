@@ -29,6 +29,14 @@
 
 .button {
   padding: 5px 10px;
-  background-color: #ddd;
+  background-color: #E3EFFE;
   margin-right: 5px;
+}
+
+#menu-content .button:hover {
+  background-color: #C6DFFD;
+}
+
+#menu-content span {
+  color: #0D3F7C;
 }
