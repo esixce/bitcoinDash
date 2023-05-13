@@ -1,14 +1,34 @@
 /* menu.css */
 
 #menu-content {
-    position: absolute; 
-    top: 50px;
-    width: calc(100% - 200px); 
-    margin-left: 200px; 
-    z-index: 100;
+  position: absolute;
+  top: 50px;
+  width: calc(100% - 200px);
+  margin-left: 200px;
+  z-index: 100;
+  padding: 10px 15px 10px 15px;
 
-    background-color: #F8FBFF;
+  background-color: #f8fbff;
 
-
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
+
+.left-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   
+}
+
+.right-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.button {
+  padding: 5px 10px;
+  background-color: #ddd;
+  margin-right: 5px;
+}
