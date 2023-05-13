@@ -3,7 +3,7 @@
 #menu-content {
   position: absolute;
   top: 50px;
-  width: calc(100%);
+  width: calc(100% - 200px);
   margin-left: 200px;
   z-index: 100;
   padding: 10px 15px 10px 15px;
@@ -11,13 +11,13 @@
   background-color: #f8fbff;
 
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   justify-content: space-between;
 }
 
 .left-buttons {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   gap: 10px;
   
 }
