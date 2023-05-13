@@ -3,8 +3,8 @@
 #menu-content {
   position: absolute;
   top: 50px;
-  width: calc(100% - 200px);
-  margin-left: 200px;
+  width: calc(100%);
+  /* margin-left: 200px; */
   z-index: 100;
   padding: 10px 15px 10px 15px;
 

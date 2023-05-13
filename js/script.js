@@ -10,28 +10,36 @@
     mainHtml();
     footerHTML();
 
+    var headerContent = document.getElementById("header-content");
+    var sidebarContent = document.getElementById("sidebar-content");
+    var menuContent = document.getElementById("menu-content");
+    var mainContent = document.getElementById("main-content");
 
-    var headerContent = document.getElementById('header-content');
-    var sidebarContent = document.getElementById('sidebar-content');
-    var menuContent = document.getElementById('menu-content');
-    
-    window.addEventListener('scroll', function() {
+    window.addEventListener("scroll", function () {
       var scrollPos = window.pageYOffset || document.documentElement.scrollTop;
-    
+
       if (scrollPos > headerContent.offsetHeight) {
-        sidebarContent.style.position = 'fixed';
-        sidebarContent.style.top = '0';
-        menuContent.style.position = 'fixed';
-        menuContent.style.top = '0';
-        menuContent.style.width = 'calc(100% - 200px)'; // Adjust the width based on the sidebar width
-        menuContent.style.marginLeft = '200px'; // Adjust the margin-left value based on the sidebar width
+        sidebarContent.style.position = "fixed";
+        sidebarContent.style.top = "0";
+        menuContent.style.position = "fixed";
+        menuContent.style.top = "0";
+        menuContent.style.width =
+          sidebarContent.style.display === "none"
+            ? "100%"
+            : "calc(100% - 200px)";
+        menuContent.style.marginLeft =
+          sidebarContent.style.display === "none" ? "0" : "200px";
       } else {
-        sidebarContent.style.position = 'absolute';
-        sidebarContent.style.top = headerContent.offsetHeight + 'px';
-        menuContent.style.position = 'absolute';
-        menuContent.style.top = headerContent.offsetHeight + 'px';
-        menuContent.style.width = 'calc(100% - 200px)';
-        menuContent.style.marginLeft = '200px';
+        sidebarContent.style.position = "absolute";
+        sidebarContent.style.top = headerContent.offsetHeight + "px";
+        menuContent.style.position = "absolute";
+        menuContent.style.top = headerContent.offsetHeight + "px";
+        menuContent.style.width =
+          sidebarContent.style.display === "none"
+            ? "100%"
+            : "calc(100% - 200px)";
+        mainContent.style.marginLeft =
+          sidebarContent.style.display === "none" ? "0" : "200px";
       }
     });
   });
@@ -50,13 +58,6 @@
     showLoading("#main-content");
     snapHTML();
   };
-
-  dc.ready = function() {
-    $('#sidebarToggle').click(function() {
-      $('#sidebar').toggleClass('active');
-    });
-  };
-  
 
   // HOME COMPONENT
   function mainHtml() {
@@ -157,7 +158,7 @@
         $ajaxUtils.sendGetRequest(
           urls.baseUrl + card.url,
           function (data) {
-            cart['get_blockchain_mini'] = data
+            cart["get_blockchain_mini"] = data;
             treemapSmall(data, "#" + card.chart);
           },
           true
@@ -215,6 +216,19 @@
       urls.menuHtmlUrl,
       function (snippetHtml) {
         insertHtml("#menu-content", snippetHtml);
+
+        var sidebarToggleBtn = document.getElementById("sidebarToggle");
+        var sidebarContent = document.getElementById("sidebar-content");
+        var menuContent = document.getElementById("menu-content");
+        var mainContent = document.getElementById("main-content");
+        
+        sidebarToggleBtn.addEventListener("click", function () {
+          sidebarContent.classList.toggle("active");
+          menuContent.style.marginLeft = sidebarContent.classList.contains("active") ? "200px" : "0";
+          mainContent.style.marginLeft = sidebarContent.classList.contains("active") ? "200px" : "0";
+        });
+        
+
       },
       false
     );
@@ -366,7 +380,6 @@
 
   // CHART INTERACTIVITY
   function showDetail(d) {
-
     showLoading("#dash-content");
 
     $ajaxUtils.sendGetRequest(
@@ -399,9 +412,9 @@
           },
           true
         );
-        
-        console.log(d)
-        console.log(d.height)
+
+        console.log(d);
+        console.log(d.height);
         $ajaxUtils.sendGetRequest(
           urls.baseUrl + "get_txs_mini/?height=" + 3000,
           // urls.baseUrl + "get_txs_mini?height=" + d.height,
@@ -411,7 +424,6 @@
           },
           true
         );
-
       },
       false
     );
@@ -1632,9 +1644,7 @@
   }
 
   // CONSTANTS TODO DB
-  cart = {
-  }
-
+  cart = {};
 
   urls = {
     cardHtmlUrl: "snippets/card-snippet.html",

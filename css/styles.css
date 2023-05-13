@@ -7,7 +7,6 @@
 @import 'main.css';
 @import 'footer.css';
 
-
 @import 'sidecon.css';
 @import 'card.css';
 
@@ -16,7 +15,16 @@
 1280px m    laptop
 1024px s   landscape
 767px  xs  tablet
-479px  sxs phone */
+479px  sxs phone 
+
+col-lg-*: ≥1200px
+col-md-*: ≥992px and <1200px
+col-sm-*: ≥768px and <992px
+
+Base: ≥1200px
+
+*/
+
 @import 'media_small.css';
 @import 'media_xsmall.css';
 @import 'media_sxsmall.css';

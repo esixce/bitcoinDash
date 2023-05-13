@@ -14,7 +14,7 @@
 
 .navbar-brand h1 {
   font-family: "Raleway", sans-serif;
-  color: #1a7ef7;
+  color: #F7931A;
   font-size: 1.3em;
   font-weight: bold;
   text-shadow: 1px 1px 1px #E3EFFE;
@@ -23,10 +23,14 @@
   letter-spacing: 2px;
 }
 
+.navbar-brand a:hover,
+.navbar-brand a:focus {
+  text-decoration: none;
+}
 
 
 
-/* 
+ 
 
 
 #logo-img {
@@ -47,10 +51,6 @@
 }
 
 
-.navbar-brand a:hover,
-.navbar-brand a:focus {
-  text-decoration: none;
-}
 
 #nav-list a {
   color: #a5d7e8;
@@ -65,4 +65,4 @@
 
 #nav-list a span {
   font-size: 2em;
-} */
+} 
