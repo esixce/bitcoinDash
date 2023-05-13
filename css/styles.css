@@ -1,7 +1,15 @@
 /* main.css */
 
-/* #0B2447, #19376D, #576CBC, #A5D7E8, #E9F5FA #F7931A, #f7f7f7 */
-/* dark                                   light         offwhite   */
+/* Import primary CSS files */
+@import 'header.css'; /* 50px height */
+@import 'sidebar.css';
+@import 'menu.css';
+@import 'main.css';
+@import 'footer.css';
+
+
+@import 'sidecon.css';
+@import 'card.css';
 
 /* 
 1920px xl  Full HD
@@ -9,17 +17,6 @@
 1024px s   landscape
 767px  xs  tablet
 479px  sxs phone */
-
-/* Import other CSS files */
-@import 'header.css';
-@import 'footer.css';
-@import 'main.css';
-
-@import 'sidebar.css';
-@import 'sidecon.css';
-
-@import 'holder.css';
-
 @import 'media_small.css';
 @import 'media_xsmall.css';
 @import 'media_sxsmall.css';
@@ -27,7 +24,20 @@
 body {
     font-size: 14px;
     color: #0b2447;
-    background-color: #f7f7f7;
+    background-color: #E3EFFE;
     font-family: "Roboto", sans-serif;
   }
 
+/* COLOR
+
+#F7931A   base orange
+#1a7ef7   compliment blue
+#0D3F7C   darker blue
+#E3EFFE   light blue (bg)
+#F8FBFF   xlight blue (bg obj)
+
+#251af7   split complimentary blue
+#1a7ef7   tetradic softer blue
+
+Other : #0B2447, #19376D, #576CBC
+*/

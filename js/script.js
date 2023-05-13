@@ -5,8 +5,35 @@
   document.addEventListener("DOMContentLoaded", function (event) {
     showLoading("#main-content");
     headerHTML();
+    sidebarHTML();
+    menuHTML();
     mainHtml();
     footerHTML();
+
+
+    var headerContent = document.getElementById('header-content');
+    var sidebarContent = document.getElementById('sidebar-content');
+    var menuContent = document.getElementById('menu-content');
+    
+    window.addEventListener('scroll', function() {
+      var scrollPos = window.pageYOffset || document.documentElement.scrollTop;
+    
+      if (scrollPos > headerContent.offsetHeight) {
+        sidebarContent.style.position = 'fixed';
+        sidebarContent.style.top = '0';
+        menuContent.style.position = 'fixed';
+        menuContent.style.top = '0';
+        menuContent.style.width = 'calc(100% - 200px)'; // Adjust the width based on the sidebar width
+        menuContent.style.marginLeft = '200px'; // Adjust the margin-left value based on the sidebar width
+      } else {
+        sidebarContent.style.position = 'absolute';
+        sidebarContent.style.top = headerContent.offsetHeight + 'px';
+        menuContent.style.position = 'absolute';
+        menuContent.style.top = headerContent.offsetHeight + 'px';
+        menuContent.style.width = 'calc(100% - 200px)';
+        menuContent.style.marginLeft = '200px';
+      }
+    });
   });
 
   dc.loadDashboard = function (cardId) {
@@ -24,6 +51,13 @@
     snapHTML();
   };
 
+  dc.ready = function() {
+    $('#sidebarToggle').click(function() {
+      $('#sidebar').toggleClass('active');
+    });
+  };
+  
+
   // HOME COMPONENT
   function mainHtml() {
     $ajaxUtils.sendGetRequest(
@@ -31,8 +65,6 @@
       function (snippetHtml) {
         insertHtml("#main-content", snippetHtml);
 
-        sidebarHTML();
-        // menuHTML();
         homeHTML();
         overviewHTML();
       },

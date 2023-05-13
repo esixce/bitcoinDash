@@ -1,31 +1,23 @@
 /* main-content.css */
 
-.main-container {
-  margin: 0;
+#main-content {
+  /* width: 100%; */
+  float: left;
+  z-index: 1;
+  margin-left: 200px; /* Adjust this value to match the width of the sidebar */
 }
 
-#mid-content {
-  display: flex;
-  flex-wrap: wrap;
+#clear-content {
+  clear: both;
 }
 
 
 .menu-item {
-  border-bottom: 1px solid #E9F5FA;
+  border-bottom: 1px solid #e9f5fa;
   padding: 10px;
 }
 
 .menu-item:hover {
-  background-color: #E9F5FA;
+  background-color: #e9f5fa;
   cursor: pointer;
 }
-
-
-#main-content {
-  /* width: 100%; */
-  float: left;
-}
-#clear-content {
-  clear: both;
-}
-  

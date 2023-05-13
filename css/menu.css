@@ -1,0 +1,14 @@
+/* menu.css */
+
+#menu-content {
+    position: absolute; 
+    top: 50px;
+    width: calc(100% - 200px); 
+    margin-left: 200px; 
+    z-index: 100;
+
+    background-color: #F8FBFF;
+
+
+}
+  
