@@ -21,25 +21,27 @@
       if (scrollPos > headerContent.offsetHeight) {
         sidebarContent.style.position = "fixed";
         sidebarContent.style.top = "0";
+
         menuContent.style.position = "fixed";
         menuContent.style.top = "0";
-        menuContent.style.width =
-          sidebarContent.style.display === "none"
-            ? "100%"
-            : "calc(100% - 200px)";
-        menuContent.style.marginLeft =
-          sidebarContent.style.display === "none" ? "0" : "200px";
+        menuContent.style.width = sidebarContent.classList.contains("active") ? "calc(100% - 200px)" : "100%";
+        menuContent.style.marginLeft = sidebarContent.classList.contains( "active" ) ? "200px" : "0";
+
+        mainContent.style.width = sidebarContent.classList.contains("active") ? "calc(100% - 200px)" : "100%";
+        mainContent.style.marginLeft = sidebarContent.classList.contains( "active" ) ? "200px" : "0";
+
       } else {
         sidebarContent.style.position = "absolute";
         sidebarContent.style.top = headerContent.offsetHeight + "px";
+
         menuContent.style.position = "absolute";
         menuContent.style.top = headerContent.offsetHeight + "px";
-        menuContent.style.width =
-          sidebarContent.style.display === "none"
-            ? "100%"
-            : "calc(100% - 200px)";
-        mainContent.style.marginLeft =
-          sidebarContent.style.display === "none" ? "0" : "200px";
+        menuContent.style.width = sidebarContent.classList.contains("active") ? "calc(100% - 200px)" : "100%";
+        menuContent.style.marginLeft = sidebarContent.classList.contains( "active" ) ? "200px" : "0";
+
+        mainContent.style.width = sidebarContent.classList.contains("active") ? "calc(100% - 200px)" : "100%";
+        mainContent.style.marginLeft = sidebarContent.classList.contains( "active" ) ? "200px" : "0";
+
       }
     });
   });
@@ -221,14 +223,20 @@
         var sidebarContent = document.getElementById("sidebar-content");
         var menuContent = document.getElementById("menu-content");
         var mainContent = document.getElementById("main-content");
-        
+
         sidebarToggleBtn.addEventListener("click", function () {
           sidebarContent.classList.toggle("active");
-          menuContent.style.marginLeft = sidebarContent.classList.contains("active") ? "200px" : "0";
-          mainContent.style.marginLeft = sidebarContent.classList.contains("active") ? "200px" : "0";
+          menuContent.style.marginLeft = sidebarContent.classList.contains(
+            "active"
+          )
+            ? "200px"
+            : "0";
+          mainContent.style.marginLeft = sidebarContent.classList.contains(
+            "active"
+          )
+            ? "200px"
+            : "0";
         });
-        
-
       },
       false
     );

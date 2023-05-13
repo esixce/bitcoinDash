@@ -3,8 +3,8 @@
 #main-content {
   float: left;
   z-index: 1;
-  margin: 50px 0px 60px 0px; 
-  /* margin: 50px 0px 60px 200px;  */
+  /* margin: 50px 0px 60px 0px;  */
+  margin: 50px 0px 60px 200px; 
 }
 
 #clear-content {
