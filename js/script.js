@@ -24,27 +24,54 @@
 
         menuContent.style.position = "fixed";
         menuContent.style.top = "0";
-        menuContent.style.width = sidebarContent.classList.contains("active") ? "calc(100% - 200px)" : "100%";
-        menuContent.style.marginLeft = sidebarContent.classList.contains( "active" ) ? "200px" : "0";
+        menuContent.style.width = sidebarContent.classList.contains("active")
+          ? "calc(100% - 200px)"
+          : "100%";
+        menuContent.style.marginLeft = sidebarContent.classList.contains(
+          "active"
+        )
+          ? "200px"
+          : "0";
 
         mainContent.style.top = "0";
-        mainContent.style.width = sidebarContent.classList.contains("active") ? "calc(100% - 200px)" : "100%";
-        mainContent.style.marginLeft = sidebarContent.classList.contains( "active" ) ? "200px" : "0";
-
+        mainContent.style.width = sidebarContent.classList.contains("active")
+          ? "calc(100% - 200px)"
+          : "100%";
+        mainContent.style.marginLeft = sidebarContent.classList.contains(
+          "active"
+        )
+          ? "200px"
+          : "0";
       } else {
         sidebarContent.style.position = "absolute";
         sidebarContent.style.top = headerContent.offsetHeight + "px";
 
         menuContent.style.position = "absolute";
         menuContent.style.top = headerContent.offsetHeight + "px";
-        menuContent.style.width = sidebarContent.classList.contains("active") ? "calc(100% - 200px)" : "100%";
-        menuContent.style.marginLeft = sidebarContent.classList.contains( "active" ) ? "200px" : "0";
+        menuContent.style.width = sidebarContent.classList.contains("active")
+          ? "calc(100% - 200px)"
+          : "100%";
+        menuContent.style.marginLeft = sidebarContent.classList.contains(
+          "active"
+        )
+          ? "200px"
+          : "0";
 
         mainContent.style.top = headerContent.offsetHeight + "px";
-        mainContent.style.width = sidebarContent.classList.contains("active") ? "calc(100% - 200px)" : "100%";
-        mainContent.style.marginLeft = sidebarContent.classList.contains( "active" ) ? "200px" : "0";
-
+        mainContent.style.width = sidebarContent.classList.contains("active")
+          ? "calc(100% - 200px)"
+          : "100%";
+        mainContent.style.marginLeft = sidebarContent.classList.contains(
+          "active"
+        )
+          ? "200px"
+          : "0";
       }
+    });
+
+    var socialToggleBtn = document.getElementById("socialToggle");
+    socialToggleBtn.addEventListener("click", function () {
+      generateSocialMediaPost();
     });
   });
 
@@ -62,6 +89,12 @@
     showLoading("#main-content");
     snapHTML();
   };
+
+
+//FUNCTION
+function generateSocialMediaPost() {
+
+}
 
   // HOME COMPONENT
   function mainHtml() {
@@ -227,10 +260,22 @@
 
         sidebarToggleBtn.addEventListener("click", function () {
           sidebarContent.classList.toggle("active");
-          menuContent.style.marginLeft = sidebarContent.classList.contains( "active" ) ? "200px" : "0";
-          menuContent.style.width = sidebarContent.classList.contains("active") ? "calc(100% - 200px)" : "100%";
-          mainContent.style.marginLeft = sidebarContent.classList.contains( "active" ) ? "200px" : "auto";
-          mainContent.style.width = sidebarContent.classList.contains("active") ? "calc(100% - 200px)" : "100%";
+          menuContent.style.marginLeft = sidebarContent.classList.contains(
+            "active"
+          )
+            ? "200px"
+            : "0";
+          menuContent.style.width = sidebarContent.classList.contains("active")
+            ? "calc(100% - 200px)"
+            : "100%";
+          mainContent.style.marginLeft = sidebarContent.classList.contains(
+            "active"
+          )
+            ? "200px"
+            : "auto";
+          mainContent.style.width = sidebarContent.classList.contains("active")
+            ? "calc(100% - 200px)"
+            : "100%";
         });
       },
       false
