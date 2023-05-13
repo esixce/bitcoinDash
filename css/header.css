@@ -2,6 +2,7 @@
 
 #header-content {
   background-color: #000;
+  height: 58px;
 }
 
 #header-nav {
@@ -27,11 +28,6 @@
 .navbar-brand a:focus {
   text-decoration: none;
 }
-
-
-
- 
-
 
 #logo-img {
   background: url("../images/logo-img.png") no-repeat;
