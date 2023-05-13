@@ -6,6 +6,7 @@
 
 #sidebar-content.active {
   position: fixed;
+  top: 50px;
   height: calc(
     100vh
    ); 

@@ -27,6 +27,7 @@
         menuContent.style.width = sidebarContent.classList.contains("active") ? "calc(100% - 200px)" : "100%";
         menuContent.style.marginLeft = sidebarContent.classList.contains( "active" ) ? "200px" : "0";
 
+        mainContent.style.top = "0";
         mainContent.style.width = sidebarContent.classList.contains("active") ? "calc(100% - 200px)" : "100%";
         mainContent.style.marginLeft = sidebarContent.classList.contains( "active" ) ? "200px" : "0";
 
@@ -39,6 +40,7 @@
         menuContent.style.width = sidebarContent.classList.contains("active") ? "calc(100% - 200px)" : "100%";
         menuContent.style.marginLeft = sidebarContent.classList.contains( "active" ) ? "200px" : "0";
 
+        mainContent.style.top = headerContent.offsetHeight + "px";
         mainContent.style.width = sidebarContent.classList.contains("active") ? "calc(100% - 200px)" : "100%";
         mainContent.style.marginLeft = sidebarContent.classList.contains( "active" ) ? "200px" : "0";
 
