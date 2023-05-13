@@ -133,7 +133,6 @@
         cardHTML(homeCards.cardA);
         cardHTML(homeCards.cardB);
         cardHTML(homeCards.cardC);
-        cardHTML(homeCards.cardD);
       },
       false
     );
@@ -229,6 +228,7 @@
         sidebarToggleBtn.addEventListener("click", function () {
           sidebarContent.classList.toggle("active");
           menuContent.style.marginLeft = sidebarContent.classList.contains( "active" ) ? "200px" : "0";
+          menuContent.style.width = sidebarContent.classList.contains("active") ? "calc(100% - 200px)" : "100%";
           mainContent.style.marginLeft = sidebarContent.classList.contains( "active" ) ? "200px" : "auto";
           mainContent.style.width = sidebarContent.classList.contains("active") ? "calc(100% - 200px)" : "100%";
         });
