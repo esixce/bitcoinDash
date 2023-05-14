@@ -125,6 +125,61 @@ $(function () {
         $ajaxUtils.sendGetRequest(
           urls.overviewHtmlUrl,
           function (overviewHtml) {
+            var overviewHtml = insertProperty(
+              overviewHtml,
+              "bestblockhash",
+              data.bestblockhash
+            );
+            var overviewHtml = insertProperty(
+              overviewHtml,
+              "difficulty",
+              data.difficulty
+            );
+            var overviewHtml = insertProperty(
+              overviewHtml,
+              "hashing_power",
+              data.hashing_power
+            );
+            var overviewHtml = insertProperty(
+              overviewHtml,
+              "mediantime",
+              data.mediantime
+            );
+            var overviewHtml = insertProperty(
+              overviewHtml,
+              "chainwork",
+              data.chainwork
+            );
+            var overviewHtml = insertProperty(
+              overviewHtml,
+              "size_on_disk",
+              data.size_on_disk
+            );
+            var overviewHtml = insertProperty(
+              overviewHtml,
+              "pruned",
+              data.pruned
+            );
+            var overviewHtml = insertProperty(
+              overviewHtml,
+              "pruneheight",
+              data.pruneheight
+            );
+            var overviewHtml = insertProperty(
+              overviewHtml,
+              "automatic_pruning",
+              data.automatic_pruning
+            );
+            var overviewHtml = insertProperty(
+              overviewHtml,
+              "softforks",
+              data.softforks
+            );
+            var overviewHtml = insertProperty(
+              overviewHtml,
+              "warnings",
+              data.warnings
+            );
 
             insertHtml("#overview-content", overviewHtml);
           },
