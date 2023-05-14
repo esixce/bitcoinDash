@@ -59,11 +59,6 @@ $(function () {
         : "0";
     }
   });
-
-  var socialToggleBtn = document.getElementById("socialToggle");
-  socialToggleBtn.addEventListener("click", function () {
-    generateSocialMediaPost();
-  });
 });
 
 (function (global) {
@@ -94,8 +89,20 @@ $(function () {
     snapHTML();
   };
 
+  dc.loadGlossary = function () {
+    showLoading("#main-content");
+    glossaryHTML();
+  };
+
+  dc.loadAct = function () {
+    showLoading("#main-content");
+    actHTML();
+  };
   //FUNCTION
-  function generateSocialMediaPost() {}
+  function generateSocialMediaPost() {
+
+
+  }
 
   // HOME COMPONENT
   function mainHtml() {
@@ -113,41 +120,11 @@ $(function () {
 
   function overviewHTML() {
     $ajaxUtils.sendGetRequest(
-      urls.baseUrl + "get_blockchain_info",
+      urls.baseUrl + "getblockchaininfo",
       function (data) {
         $ajaxUtils.sendGetRequest(
           urls.overviewHtmlUrl,
           function (overviewHtml) {
-            var overviewHtml = insertProperty(
-              overviewHtml,
-              "chain",
-              data.chain
-            );
-            var overviewHtml = insertProperty(
-              overviewHtml,
-              "blocks",
-              data.blocks
-            );
-            var overviewHtml = insertProperty(
-              overviewHtml,
-              "headers",
-              data.headers
-            );
-            var overviewHtml = insertProperty(
-              overviewHtml,
-              "bestblockhash",
-              data.bestblockhash
-            );
-            var overviewHtml = insertProperty(
-              overviewHtml,
-              "difficulty",
-              data.difficulty
-            );
-            var overviewHtml = insertProperty(
-              overviewHtml,
-              "mediantime",
-              data.mediantime
-            );
 
             insertHtml("#overview-content", overviewHtml);
           },
@@ -277,6 +254,11 @@ $(function () {
           mainContent.style.width = sidebarContent.classList.contains("active")
             ? "calc(100% - 200px)"
             : "100%";
+        });
+
+        var socialToggleBtn = document.getElementById("socialToggle");
+        socialToggleBtn.addEventListener("click", function () {
+          generateSocialMediaPost();
         });
       },
       false
@@ -415,6 +397,7 @@ $(function () {
       false
     );
   }
+
   function snapHTML() {
     $ajaxUtils.sendGetRequest(
       urls.snapHtmlUrl,
@@ -425,6 +408,15 @@ $(function () {
     );
   }
 
+  function glossaryHTML() {
+    $ajaxUtils.sendGetRequest(
+      urls.glossaryHtmlUrl,
+      function (snippetHtml) {
+        insertHtml("#main-content", snippetHtml);
+      },
+      false
+    );
+  }
   // END COMPONENTS
 
   // CHART INTERACTIVITY
@@ -1713,9 +1705,10 @@ $(function () {
     txsmapHtmlUrl: "snippets/txsmap-snippet.html",
     smallchartHtmlUrl: "snippets/small-chart-snippet.html",
     overviewHtmlUrl: "snippets/overview-snippet.html",
+    glossaryHtmlUrl: "snippets/glossary-snippet.html",
     // baseUrl: "http://54.236.33.205:8000/"
-    baseUrl: "http://localhost:8000/",
-    // baseUrl: "https://api.bitcoinpublico.com/",
+    // baseUrl: "http://localhost:8000/",
+    baseUrl: "https://api.bitcoinpublico.com/",
   };
 
   const homeCards = {
