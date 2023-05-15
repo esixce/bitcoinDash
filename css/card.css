@@ -14,13 +14,13 @@
   /* CARDS */
   .card {
     background-color: #F8FBFF;
-    box-shadow: 0px 0px 7px 0px #0D3F7C,
+    box-shadow: 0px 0px 7px 0px #C6DFFD,
       inset 0px 0px 3px 0px #E3EFFE;
     margin: 20px 0px 20px 0px;
     width: 100%;
     /* min-height: 220px;   */
   }
-  
+    
   .card-body {
     padding: 7px;
   }
